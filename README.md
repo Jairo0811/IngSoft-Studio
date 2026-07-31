@@ -113,10 +113,9 @@ IngSoft Studio nace como una reinterpretación moderna de los contenidos trabaja
 | Campo | Información |
 |---|---|
 | Institución | Instituto Tecnológico de Las Américas (ITLA) |
-| Asignatura | Introducción a la Ingeniería en Software |
-| Código | SOF-015 |
+| Asignatura | Introducción a la Ingeniería en Software (SOF-015) |
 | Profesor | Leandro Eduardo Fondeur Gil |
-| Período académico | 2017-C3 |
+| Período Académico | 2017-C3 |
 | Grupo | #4 |
 
 ## Integrantes del grupo original
