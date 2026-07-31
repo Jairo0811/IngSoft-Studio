@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./docs/images/ingsoft-studio-banner.png" alt="Portada de IngSoft Studio" width="100%" />
+
 # IngSoft Studio
 
 ### Engineering Better Software
