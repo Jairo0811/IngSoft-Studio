@@ -5,7 +5,6 @@
 ### Engineering Better Software
 
 <img src="https://img.shields.io/badge/ITLA-2017--C3-2D3748?style=for-the-badge" alt="ITLA 2017-C3" />
-<img src="https://img.shields.io/badge/Asignatura-SOF--015-10B981?style=for-the-badge" alt="SOF-015" />
 
 <br/>
 <br/>
