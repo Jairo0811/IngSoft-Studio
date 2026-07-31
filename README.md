@@ -1,13 +1,11 @@
 <div align="center">
 
-<img src="./docs/images/ingsoft-studio-banner.png" alt="Portada de IngSoft Studio" width="100%" />
+<img src="./docs/images/ingsoft-studio-banner.png" alt="Portada de IngSoft Studio" width="800" />
 
-# IngSoft Studio
-
-### Engineering Better Software
+<div align="center">
 
 <img src="https://img.shields.io/badge/ITLA-2017--C3-2D3748?style=for-the-badge" alt="ITLA 2017-C3" />
-
+<div/>
 <br/>
 <br/>
 
