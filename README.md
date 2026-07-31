@@ -203,10 +203,10 @@ Domain ← Application ← Infrastructure ← API
 | Nombre completo | Matrícula |
 |---|---|
 | 👨‍💻 **Francis Jairo Matías Rosario** | 2015-2984 |
-| 👨‍🎓 **Franger Ramírez** | 2015-3008 |
+| 👨‍🎓 **Franger Omar Ramírez Peguero** | 2015-3008 |
 | 👨‍🎓 **Pedro Arturo de León Parra** | 2015-3018 |
-| 👨‍🎓 **José Durán** | 2015-3035 |
-| 👨‍🎓 **Fidel Acosta** | 2015-3045 |
+| 👨‍🎓 **José Andres Durán Diaz** | 2015-3035 |
+| 👨‍🎓 **Fidel Ernesto Acosta Morillo** | 2015-3045 |
 
 > El grupo participó en los trabajos académicos originales. La reconstrucción moderna de IngSoft Studio corresponde a una iniciativa posterior desarrollada por Francis Jairo Matías Rosario.
 
