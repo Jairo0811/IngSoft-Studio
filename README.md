@@ -108,7 +108,7 @@ IngSoft-Studio/
 
 ## Origen académico
 
-IngSoft Studio nace como una reinterpretación moderna de los contenidos trabajados en una asignatura principalmente teórica del Instituto Tecnológico de Las Américas.
+IngSoft Studio nace como una reinterpretación moderna de los contenidos trabajados en una asignatura principalmente teórica del Instituto Tecnológico de Las Américas (ITLA).
 
 | Campo | Información |
 |---|---|
