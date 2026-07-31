@@ -1,91 +1,129 @@
+<div align="center">
+
 # IngSoft Studio
 
-> **Engineering Better Software**
+### Engineering Better Software
 
-IngSoft Studio es una plataforma web orientada a la gestión, análisis, planificación y simulación del ciclo de vida del desarrollo de software. El proyecto transforma los fundamentos estudiados en la asignatura **Introducción a la Ingeniería en Software (SOF-015)** en una aplicación moderna, profesional y preparada para evolucionar como proyecto de portafolio.
+<img src="https://img.shields.io/badge/ITLA-2017--C3-2D3748?style=for-the-badge" alt="ITLA 2017-C3" />
+<img src="https://img.shields.io/badge/Asignatura-SOF--015-10B981?style=for-the-badge" alt="SOF-015" />
 
-## Objetivo
+<br/>
+<br/>
 
-Centralizar en un solo entorno las principales prácticas de Ingeniería de Software, desde la definición de requisitos hasta el mantenimiento del producto, incorporando trazabilidad, calidad, métricas, pruebas, reportes y simulación de escenarios.
+![Estado](https://img.shields.io/badge/Estado-Fundaci%C3%B3n%20t%C3%A9cnica%20%7C%20En%20desarrollo-F59E0B?style=for-the-badge)
+![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=0B1220)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQL_Server-LocalDB-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
+![Architecture](https://img.shields.io/badge/Architecture-Clean-14B8A6?style=for-the-badge)
 
-## Ciclo de vida cubierto
+> Plataforma web para gestionar, analizar y simular el ciclo de vida del desarrollo de software, desde los requisitos y el diseño hasta las pruebas, la calidad y el mantenimiento.
 
-1. **Requisitos** — gestión de requisitos funcionales y no funcionales.
-2. **Análisis y diseño** — casos de uso, historias de usuario y arquitectura.
-3. **Desarrollo** — planificación, tareas y seguimiento del progreso.
-4. **Pruebas** — casos de prueba, ejecución, evidencias y cobertura.
-5. **Despliegue** — versiones, liberaciones y control de entregas.
-6. **Mantenimiento** — incidencias, mejoras y evolución continua.
+</div>
 
-## Módulos planificados
+---
 
-- Identidad y control de acceso
-- Gestión de proyectos
-- Ingeniería de requisitos
-- Análisis y diseño
-- Gestión de riesgos
-- Calidad de software
-- Casos de prueba y defectos
-- Trazabilidad
-- Métricas y estimaciones
-- Revisiones y auditorías
-- Reportes y exportaciones
-- Simulador de Ingeniería de Software
-- Centro de aprendizaje
+## 📌 Descripción
 
-## Arquitectura propuesta
+**IngSoft Studio** es una plataforma web orientada a la gestión integral de proyectos de software. Centraliza requisitos, análisis, diseño, riesgos, métricas, pruebas, calidad, trazabilidad, mantenimiento y simulación de escenarios dentro de un único espacio de trabajo.
 
-IngSoft Studio utilizará una **Clean Architecture pragmática** organizada como **monolito modular**, evitando microservicios prematuros y manteniendo una separación clara de responsabilidades.
+El proyecto nace como una reconstrucción moderna de los contenidos estudiados en **Introducción a la Ingeniería en Software (SOF-015)** del Instituto Tecnológico de Las Américas. La asignatura fue principalmente teórica; esta nueva implementación convierte aquellos fundamentos en una aplicación real, modular y preparada para crecer como proyecto profesional de portafolio.
 
-```text
-IngSoft-Studio/
-├── backend/
-│   ├── src/
-│   │   ├── IngSoftStudio.Domain/
-│   │   ├── IngSoftStudio.Application/
-│   │   ├── IngSoftStudio.Infrastructure/
-│   │   └── IngSoftStudio.Api/
-│   └── tests/
-│       ├── IngSoftStudio.UnitTests/
-│       └── IngSoftStudio.IntegrationTests/
-├── frontend/
-│   └── ingsoft-studio-web/
-├── docs/
-├── .github/workflows/
-└── README.md
-```
+> 💡 La idea de transformar el trabajo académico en una plataforma de software fue concebida por **Francis Jairo Matías Rosario**.
 
-## Tecnologías previstas
+---
+
+## 🎯 Objetivo general
+
+Desarrollar un entorno profesional que permita planificar, documentar, controlar y evaluar el ciclo de vida de proyectos de software, aplicando principios de Ingeniería de Software, trazabilidad, aseguramiento de calidad, estimación, gestión de riesgos y mejora continua.
+
+---
+
+## 🔄 Ciclo de vida cubierto
+
+| Fase | Alcance dentro de IngSoft Studio |
+|---|---|
+| 📋 Requisitos | Requisitos funcionales y no funcionales, historias de usuario y priorización |
+| 📐 Análisis y diseño | Casos de uso, arquitectura, componentes y decisiones técnicas |
+| 💻 Desarrollo | Planificación, tareas, estados y seguimiento del progreso |
+| 🧪 Pruebas | Casos de prueba, ejecuciones, evidencias, defectos y cobertura |
+| 🚀 Despliegue | Versiones, entregas, liberaciones y control de cambios |
+| 🔄 Mantenimiento | Incidencias, solicitudes de mejora y evolución continua |
+
+---
+
+## 🚀 Funcionalidades previstas
+
+- 📊 Dashboard ejecutivo
+- 📁 Gestión de proyectos
+- 👥 Usuarios, roles y permisos
+- 📋 Ingeniería de requisitos
+- 🧭 Historias de usuario y casos de uso
+- 🏗️ Análisis y diseño de arquitectura
+- ⚠️ Gestión de riesgos
+- 📐 Métricas y estimaciones
+- 🧪 Gestión de pruebas y defectos
+- 🔗 Matriz de trazabilidad
+- ✅ Revisiones y aseguramiento de calidad
+- 📄 Reportes PDF y Excel
+- 🎮 Simulador de decisiones de Ingeniería de Software
+- 🎓 Centro de aprendizaje
+- 🔔 Notificaciones y seguimiento
+
+---
+
+## 🛠️ Stack tecnológico
 
 ### Backend
+
+<p>
+  <img src="https://skillicons.dev/icons?i=dotnet,cs" alt=".NET y C#" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/swagger/swagger-original.svg" alt="Swagger" width="48" height="48" />
+</p>
 
 - C#
 - .NET 10
 - ASP.NET Core Web API
 - Entity Framework Core
-- ASP.NET Core Identity
-- SQL Server LocalDB o SQL Server Express
+- SQL Server LocalDB / SQL Server Express
+- Swagger / OpenAPI
+- Serilog
 - FluentValidation
 - Mapster
-- Serilog
-- QuestPDF
-- ClosedXML
 
 ### Frontend
 
-- React
+<p>
+  <img src="https://skillicons.dev/icons?i=react,ts,vite" alt="React, TypeScript y Vite" />
+</p>
+
+- React 19
 - TypeScript
 - Vite
-- Tailwind CSS
 - React Router
 - TanStack Query
+- Tailwind CSS
 - React Hook Form
 - Zod
 - Recharts
 - React Flow
 - Lucide React
 
-### Calidad
+### Base de datos
+
+<p>
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/microsoftsqlserver/microsoftsqlserver-plain.svg" alt="SQL Server" width="48" height="48" />
+</p>
+
+- Microsoft SQL Server
+- Entity Framework Core Migrations
+- LocalDB para desarrollo local
+
+### Calidad y automatización
+
+<p>
+  <img src="https://skillicons.dev/icons?i=git,github" alt="Git y GitHub" />
+</p>
 
 - xUnit
 - FluentAssertions
@@ -95,7 +133,42 @@ IngSoft-Studio/
 - Playwright
 - GitHub Actions
 
-## Principios de desarrollo
+---
+
+## 🏗️ Arquitectura
+
+IngSoft Studio utiliza una **Clean Architecture pragmática** organizada como **monolito modular**. Esta decisión mantiene una separación clara de responsabilidades sin introducir la complejidad prematura de microservicios.
+
+```text
+IngSoft-Studio/
+├── backend/
+│   └── src/
+│       ├── IngSoftStudio.Domain/
+│       ├── IngSoftStudio.Application/
+│       ├── IngSoftStudio.Infrastructure/
+│       └── IngSoftStudio.Api/
+├── frontend/
+│   └── ingsoft-studio-web/
+├── docs/
+├── .github/workflows/
+└── README.md
+```
+
+Regla de dependencias:
+
+```text
+Domain ← Application ← Infrastructure ← API
+```
+
+- **Domain:** entidades, reglas de negocio y enumeraciones.
+- **Application:** casos de uso, DTO, contratos y validaciones.
+- **Infrastructure:** persistencia, EF Core, SQL Server y servicios técnicos.
+- **API:** endpoints, middleware, configuración y documentación OpenAPI.
+- **Frontend:** interfaz React modular y desacoplada de la implementación interna del backend.
+
+---
+
+## 🧱 Principios de desarrollo
 
 - Clean Code
 - SOLID
@@ -105,70 +178,160 @@ IngSoft-Studio/
 - Arquitectura modular
 - Seguridad por diseño
 - Código mantenible y escalable
+- Validación centralizada
+- Documentación orientada al valor
 
-## Origen académico
+---
 
-IngSoft Studio nace como una reinterpretación moderna de los contenidos trabajados en una asignatura principalmente teórica del Instituto Tecnológico de Las Américas (ITLA).
+## 🎓 Contexto académico
 
-| Campo | Información |
+| Dato | Información |
 |---|---|
-| Institución | Instituto Tecnológico de Las Américas (ITLA) |
-| Asignatura | Introducción a la Ingeniería en Software (SOF-015) |
-| Profesor | Leandro Eduardo Fondeur Gil |
-| Período Académico | 2017-C3 |
-| Grupo | #4 |
+| 🏫 Institución | Instituto Tecnológico de Las Américas (ITLA) |
+| 📖 Asignatura | Introducción a la Ingeniería en Software |
+| 🆔 Código | SOF-015 |
+| 👨‍🏫 Profesor | Leandro Eduardo Fondeur Gil |
+| 📅 Período académico | 2017-C3 |
+| 👥 Grupo | #4 |
+| 📚 Naturaleza de la materia | Teórica |
+| 💡 Idea de reconstrucción | Francis Jairo Matías Rosario |
 
-## Integrantes del grupo original
+---
 
-- Francis Jairo Matías Rosario — 2015-2984
-- Franger Ramírez — 2015-3008
-- Pedro Arturo De León — 2015-3018
-- José Durán — 2015-3035
-- Fidel Acosta — 2015-3045
+## 👥 Integrantes del grupo original
 
-> El trabajo académico original fue de carácter teórico. IngSoft Studio representa una reconstrucción nueva, desarrollada desde cero para convertir esos fundamentos en una plataforma web profesional.
+| Nombre completo | Matrícula |
+|---|---|
+| 👨‍💻 **Francis Jairo Matías Rosario** | 2015-2984 |
+| 👨‍🎓 **Franger Ramírez** | 2015-3008 |
+| 👨‍🎓 **Pedro Arturo de León Parra** | 2015-3018 |
+| 👨‍🎓 **José Durán** | 2015-3035 |
+| 👨‍🎓 **Fidel Acosta** | 2015-3045 |
 
-## Roadmap
+> El grupo participó en los trabajos académicos originales. La reconstrucción moderna de IngSoft Studio corresponde a una iniciativa posterior desarrollada por Francis Jairo Matías Rosario.
 
-### Fase 1 — Foundation
+### Reencuentro académico
 
-- [ ] Solución backend
-- [ ] Proyecto frontend
-- [ ] Arquitectura base
-- [ ] Configuración de SQL Server
-- [ ] CI con GitHub Actions
+**Pedro Arturo de León Parra** también formó parte del grupo de **Auditoría Informática (SOF-009)** que posteriormente inspiró el proyecto [AuditCore](https://github.com/Jairo0811/AuditCore). IngSoft Studio representa, por tanto, un nuevo capítulo de colaboración académica entre compañeros que ya habían compartido otra asignatura del ITLA.
 
-### Fase 2 — Identity
+---
 
-- [ ] Autenticación
+## 📦 Estado actual
+
+El proyecto se encuentra en **fase de fundación técnica**. Ya existe una primera base full stack, pero todavía no constituye una versión funcional completa del producto.
+
+| Área | Estado | Detalle |
+|---|---|---|
+| Backend ASP.NET Core | ✅ Base creada | Proyectos Domain, Application, Infrastructure y API |
+| Frontend React | ✅ Base creada | Dashboard inicial con React, TypeScript y Vite |
+| Arquitectura modular | ✅ Configurada | Separación de capas y responsabilidades |
+| Primer módulo de proyectos | 🟡 Inicial | Entidad, servicio y endpoints básicos |
+| SQL Server | 🟡 Configurado | LocalDB preparado; migraciones funcionales pendientes |
+| Swagger / OpenAPI | ✅ Configurado | Documentación inicial de endpoints |
+| GitHub Actions | 🟡 Parcial | Frontend compila; backend requiere actualizar dependencias vulnerables |
+| Autenticación | 🚧 Pendiente | Usuarios, roles y permisos |
+| Pruebas automatizadas | 🚧 Pendiente | Suites backend y frontend |
+| Módulos funcionales | 🚧 Pendiente | Requisitos, riesgos, calidad, testing y simulación |
+
+> ⚠️ El workflow actual detectó vulnerabilidades en dependencias del backend. Estas dependencias deben actualizarse antes de continuar con nuevas funcionalidades.
+
+---
+
+## 🗺️ Roadmap
+
+### Fase 1 — Fundación técnica
+
+- [x] Arquitectura backend
+- [x] Proyecto frontend
+- [x] Dashboard inicial
+- [x] Primer módulo de proyectos
+- [x] Swagger / OpenAPI
+- [x] GitHub Actions
+- [ ] Actualizar dependencias vulnerables
+- [ ] Compilación completa del backend en CI
+- [ ] Migración inicial de SQL Server
+- [ ] Pruebas base
+
+### Fase 2 — Identidad y acceso
+
+- [ ] Registro e inicio de sesión
 - [ ] Roles y permisos
+- [ ] Recuperación de contraseña
 - [ ] Perfil de usuario
 
-### Fase 3 — Projects & Requirements
+### Fase 3 — Proyectos y requisitos
 
-- [ ] Gestión de proyectos
+- [ ] Gestión completa de proyectos
 - [ ] Requisitos funcionales y no funcionales
 - [ ] Historias de usuario
 - [ ] Casos de uso
+- [ ] Priorización MoSCoW
 
-### Fase 4 — Quality & Testing
+### Fase 4 — Calidad y pruebas
 
 - [ ] Riesgos
 - [ ] Métricas
 - [ ] Casos de prueba
-- [ ] Defectos y evidencias
+- [ ] Defectos
+- [ ] Evidencias
+- [ ] Matriz de trazabilidad
 
-### Fase 5 — Simulation & Reporting
+### Fase 5 — Simulación y reportes
 
 - [ ] Simulador de decisiones
-- [ ] Dashboard ejecutivo
+- [ ] Dashboard conectado a datos reales
 - [ ] Reportes PDF y Excel
 - [ ] Centro de aprendizaje
 
-## Estado actual
+---
 
-**Versión inicial en construcción.** La siguiente etapa es crear el scaffolding funcional del backend y del frontend.
+## ▶️ Ejecución local
 
-## Licencia
+### Requisitos
+
+- .NET 10 SDK
+- Node.js LTS
+- SQL Server LocalDB o SQL Server Express
+- Git
+
+### Backend
+
+```powershell
+cd backend/src/IngSoftStudio.Api
+dotnet restore
+dotnet run
+```
+
+### Frontend
+
+```powershell
+cd frontend/ingsoft-studio-web
+npm install
+npm run dev
+```
+
+---
+
+## 📚 Proyecto relacionado
+
+- [AuditCore](https://github.com/Jairo0811/AuditCore) — plataforma de gestión de auditorías de TI inspirada en la asignatura Auditoría Informática (SOF-009).
+
+Ambos proyectos convierten materias teóricas del ITLA en aplicaciones web profesionales, preservando su contexto académico y evolucionándolo hacia soluciones modernas de portafolio.
+
+---
+
+## 📄 Licencia
 
 Licencia pendiente de definición.
+
+---
+
+<div align="center">
+
+### IngSoft Studio
+
+**Planifica. Diseña. Construye. Mejora.**
+
+Desarrollado como reconstrucción moderna de una experiencia académica del ITLA.
+
+</div>
