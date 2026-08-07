@@ -85,10 +85,12 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - C#
 - .NET 10
 - ASP.NET Core Web API
-- Entity Framework Core
+- Entity Framework Core 10.0.8
 - SQL Server LocalDB / SQL Server Express
 - Swagger / OpenAPI
-- Serilog
+- Microsoft.OpenApi 2.11.0
+- Swashbuckle.AspNetCore 10.1.0
+- Serilog.AspNetCore 10.0.0
 - FluentValidation
 - Mapster
 
@@ -219,7 +221,7 @@ Domain ← Application ← Infrastructure ← API
 
 ## 📦 Estado actual
 
-El proyecto se encuentra en **fase de fundación técnica**. Ya existe una primera base full stack, pero todavía no constituye una versión funcional completa del producto.
+El proyecto se encuentra en **fase de fundación técnica**. La base full stack está creada y la estabilización del backend ya fue validada por GitHub Actions con compilación exitosa tanto en backend como en frontend.
 
 | Área | Estado | Detalle |
 |---|---|---|
@@ -228,13 +230,15 @@ El proyecto se encuentra en **fase de fundación técnica**. Ya existe una prime
 | Arquitectura modular | ✅ Configurada | Separación de capas y responsabilidades |
 | Primer módulo de proyectos | 🟡 Inicial | Entidad, servicio y endpoints básicos |
 | SQL Server | 🟡 Configurado | LocalDB preparado; migraciones funcionales pendientes |
-| Swagger / OpenAPI | ✅ Configurado | Documentación inicial de endpoints |
-| GitHub Actions | 🟡 Parcial | Frontend compila; backend requiere actualizar dependencias vulnerables |
+| Swagger / OpenAPI | ✅ Configurado | OpenAPI actualizado y dependencia vulnerable fijada |
+| Dependencias backend | ✅ Estabilizadas | .NET 10, EF Core 10.0.8, OpenAPI 2.11.0 y Swashbuckle 10.1.0 |
+| Logging | ✅ Estabilizado | Serilog usa CultureInfo.InvariantCulture para cumplir CA1305 |
+| GitHub Actions | ✅ En verde | Restore y build del backend y frontend completados correctamente |
 | Autenticación | 🚧 Pendiente | Usuarios, roles y permisos |
 | Pruebas automatizadas | 🚧 Pendiente | Suites backend y frontend |
 | Módulos funcionales | 🚧 Pendiente | Requisitos, riesgos, calidad, testing y simulación |
 
-> ⚠️ El workflow actual detectó vulnerabilidades en dependencias del backend. Estas dependencias deben actualizarse antes de continuar con nuevas funcionalidades.
+> ✅ La fundación técnica ya compila correctamente en CI. El siguiente bloque es persistencia real con migración inicial de SQL Server y pruebas base.
 
 ---
 
@@ -248,8 +252,8 @@ El proyecto se encuentra en **fase de fundación técnica**. Ya existe una prime
 - [x] Primer módulo de proyectos
 - [x] Swagger / OpenAPI
 - [x] GitHub Actions
-- [ ] Actualizar dependencias vulnerables
-- [ ] Compilación completa del backend en CI
+- [x] Actualizar dependencias vulnerables
+- [x] Compilación completa del backend en CI
 - [ ] Migración inicial de SQL Server
 - [ ] Pruebas base
 
