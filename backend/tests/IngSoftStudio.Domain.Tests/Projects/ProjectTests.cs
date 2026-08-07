@@ -1,5 +1,6 @@
 using FluentAssertions;
 using IngSoftStudio.Domain.Projects;
+using Xunit;
 
 namespace IngSoftStudio.Domain.Tests.Projects;
 
