@@ -1,3 +1,4 @@
+using System.Globalization;
 using IngSoftStudio.Application.Projects;
 using IngSoftStudio.Infrastructure.Persistence;
 using IngSoftStudio.Infrastructure.Projects;
@@ -7,7 +8,9 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, configuration) =>
-    configuration.ReadFrom.Configuration(context.Configuration).WriteTo.Console());
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
