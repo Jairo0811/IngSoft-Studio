@@ -7,7 +7,7 @@ namespace IngSoftStudio.Domain.Tests.Projects;
 public sealed class ProjectTests
 {
     [Fact]
-    public void Constructor_ShouldCreateDraftProject_WhenDataIsValid()
+    public void ConstructorCreatesDraftProjectWhenDataIsValid()
     {
         var project = new Project("  IngSoft Studio  ", "  Plataforma de ingeniería de software  ");
 
@@ -19,7 +19,7 @@ public sealed class ProjectTests
     }
 
     [Fact]
-    public void Constructor_ShouldRejectEmptyName()
+    public void ConstructorRejectsEmptyName()
     {
         var action = () => new Project("   ", null);
 
@@ -28,7 +28,7 @@ public sealed class ProjectTests
     }
 
     [Fact]
-    public void Rename_ShouldTrimName_AndUpdateTimestamp()
+    public void RenameTrimsNameAndUpdatesTimestamp()
     {
         var project = new Project("Original", null);
 
