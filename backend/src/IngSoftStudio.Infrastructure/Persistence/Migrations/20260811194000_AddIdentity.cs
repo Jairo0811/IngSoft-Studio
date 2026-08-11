@@ -34,7 +34,7 @@ public partial class AddIdentity : Migration
                 PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                 SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
                 ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                PhoneNumber = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                 PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
                 TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                 LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
@@ -89,6 +89,20 @@ public partial class AddIdentity : Migration
             });
 
         migrationBuilder.CreateTable(
+            name: "UserPasskeys",
+            columns: table => new
+            {
+                CredentialId = table.Column<byte[]>(type: "varbinary(1024)", maxLength: 1024, nullable: false),
+                UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                Data = table.Column<string>(type: "nvarchar(max)", nullable: false)
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_UserPasskeys", x => x.CredentialId);
+                table.ForeignKey("FK_UserPasskeys_Users_UserId", x => x.UserId, "Users", "Id", onDelete: ReferentialAction.Cascade);
+            });
+
+        migrationBuilder.CreateTable(
             name: "UserRoles",
             columns: table => new
             {
@@ -121,6 +135,7 @@ public partial class AddIdentity : Migration
         migrationBuilder.CreateIndex("RoleNameIndex", "Roles", "NormalizedName", unique: true, filter: "[NormalizedName] IS NOT NULL");
         migrationBuilder.CreateIndex("IX_UserClaims_UserId", "UserClaims", "UserId");
         migrationBuilder.CreateIndex("IX_UserLogins_UserId", "UserLogins", "UserId");
+        migrationBuilder.CreateIndex("IX_UserPasskeys_UserId", "UserPasskeys", "UserId");
         migrationBuilder.CreateIndex("IX_UserRoles_RoleId", "UserRoles", "RoleId");
         migrationBuilder.CreateIndex("EmailIndex", "Users", "NormalizedEmail");
         migrationBuilder.CreateIndex("UserNameIndex", "Users", "NormalizedUserName", unique: true, filter: "[NormalizedUserName] IS NOT NULL");
@@ -131,6 +146,7 @@ public partial class AddIdentity : Migration
         migrationBuilder.DropTable("RoleClaims");
         migrationBuilder.DropTable("UserClaims");
         migrationBuilder.DropTable("UserLogins");
+        migrationBuilder.DropTable("UserPasskeys");
         migrationBuilder.DropTable("UserRoles");
         migrationBuilder.DropTable("UserTokens");
         migrationBuilder.DropTable("Roles");
