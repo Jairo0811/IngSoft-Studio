@@ -2,6 +2,7 @@ import { BarChart3, CheckCircle2, FlaskConical, FolderKanban, Rocket, RotateCcw 
 import { Link, Route, Routes } from 'react-router-dom'
 import AccountPage from './pages/AccountPage'
 import AuthPage from './pages/AuthPage'
+import PasswordRecoveryPage from './pages/PasswordRecoveryPage'
 
 const lifecycle = [
   { icon: FolderKanban, title: 'Requisitos', description: 'Define y gestiona requisitos funcionales y no funcionales.' },
@@ -57,6 +58,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
+      <Route path="/forgot-password" element={<PasswordRecoveryPage />} />
       <Route path="/account" element={<AccountPage />} />
     </Routes>
   )
