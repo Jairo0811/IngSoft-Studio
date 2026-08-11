@@ -1,9 +1,11 @@
 using IngSoftStudio.Application.Projects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IngSoftStudio.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/v1/projects")]
 public sealed class ProjectsController(IProjectService projectService) : ControllerBase
 {
