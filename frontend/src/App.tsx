@@ -1,4 +1,7 @@
 import { BarChart3, CheckCircle2, FlaskConical, FolderKanban, Rocket, RotateCcw } from 'lucide-react'
+import { Link, Route, Routes } from 'react-router-dom'
+import AccountPage from './pages/AccountPage'
+import AuthPage from './pages/AuthPage'
 
 const lifecycle = [
   { icon: FolderKanban, title: 'Requisitos', description: 'Define y gestiona requisitos funcionales y no funcionales.' },
@@ -9,7 +12,7 @@ const lifecycle = [
   { icon: RotateCcw, title: 'Mantenimiento', description: 'Controla incidencias y evolución continua.' },
 ]
 
-function App() {
+function LandingPage() {
   return (
     <main className="app-shell">
       <section className="hero">
@@ -23,8 +26,8 @@ function App() {
             Plataforma integral para gestionar, analizar, planificar y simular el ciclo de vida del desarrollo de software.
           </p>
           <div className="actions">
-            <button type="button">Crear proyecto</button>
-            <button className="secondary" type="button">Explorar módulos</button>
+            <Link className="primary-link" to="/auth">Comenzar</Link>
+            <a className="secondary-link" href="#lifecycle-title">Explorar módulos</a>
           </div>
         </div>
       </section>
@@ -46,6 +49,16 @@ function App() {
         </div>
       </section>
     </main>
+  )
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/auth" element={<AuthPage />} />
+      <Route path="/account" element={<AccountPage />} />
+    </Routes>
   )
 }
 
