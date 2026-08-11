@@ -22,7 +22,7 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) : 
         var response = new List<UserResponse>(users.Count);
         foreach (var user in users)
         {
-            var roles = await userManager.GetRolesAsync(user);
+            var roles = (await userManager.GetRolesAsync(user)).ToArray();
             response.Add(new UserResponse(user.Id, user.FullName, user.Email ?? string.Empty, roles));
         }
 
@@ -44,14 +44,7 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) : 
         }
 
         var result = await userManager.AddToRoleAsync(user, roleName);
-        if (!result.Succeeded)
-        {
-            return ValidationProblem(result.Errors
-                .GroupBy(error => error.Code)
-                .ToDictionary(group => group.Key, group => group.Select(error => error.Description).ToArray()));
-        }
-
-        return NoContent();
+        return result.Succeeded ? NoContent() : BadRequest(CreateValidationProblem(result));
     }
 
     [HttpDelete("{userId:guid}/roles/{roleName}")]
@@ -63,14 +56,18 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) : 
             return NotFound();
         }
 
-        if (roleName == "User" && (await userManager.GetRolesAsync(user)).Count == 1)
+        var currentRoles = await userManager.GetRolesAsync(user);
+        if (currentRoles.Count == 1 && currentRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase))
         {
             return Conflict(new ProblemDetails { Title = "A user must retain at least one role." });
         }
 
         var result = await userManager.RemoveFromRoleAsync(user, roleName);
-        return result.Succeeded ? NoContent() : ValidationProblem(result.Errors
+        return result.Succeeded ? NoContent() : BadRequest(CreateValidationProblem(result));
+    }
+
+    private static ValidationProblemDetails CreateValidationProblem(IdentityResult result) =>
+        new(result.Errors
             .GroupBy(error => error.Code)
             .ToDictionary(group => group.Key, group => group.Select(error => error.Description).ToArray()));
-    }
 }
