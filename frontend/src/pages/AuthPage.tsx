@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { authService } from '../services/auth'
 
 export default function AuthPage() {
@@ -77,6 +77,8 @@ export default function AuthPage() {
             {submitting ? 'Procesando…' : mode === 'login' ? 'Entrar' : 'Registrarme'}
           </button>
         </form>
+
+        {mode === 'login' && <Link to="/forgot-password">¿Olvidaste tu contraseña?</Link>}
 
         <button className="text-button" type="button" onClick={() => setMode(mode === 'login' ? 'register' : 'login')}>
           {mode === 'login' ? '¿No tienes cuenta? Crear una' : '¿Ya tienes cuenta? Iniciar sesión'}
