@@ -19,7 +19,18 @@ public sealed class AuthController(
     [AllowAnonymous]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
-        var existingUser = await userManager.FindByEmailAsync(request.Email.Trim());
+        var email = request.Email.Trim();
+        var fullName = request.FullName.Trim();
+
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>
+            {
+                [nameof(request.FullName)] = ["Full name is required."]
+            }));
+        }
+
+        var existingUser = await userManager.FindByEmailAsync(email);
         if (existingUser is not null)
         {
             return Conflict(new ProblemDetails
@@ -33,19 +44,25 @@ public sealed class AuthController(
         var user = new ApplicationUser
         {
             Id = Guid.NewGuid(),
-            UserName = request.Email.Trim(),
-            Email = request.Email.Trim(),
-            FullName = request.FullName.Trim(),
+            UserName = email,
+            Email = email,
+            FullName = fullName,
             EmailConfirmed = true
         };
 
         var result = await userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
         {
-            return ValidationProblem(ToValidationDictionary(result));
+            return BadRequest(CreateValidationProblem(result));
         }
 
-        await userManager.AddToRoleAsync(user, "User");
+        var roleResult = await userManager.AddToRoleAsync(user, "User");
+        if (!roleResult.Succeeded)
+        {
+            await userManager.DeleteAsync(user);
+            return BadRequest(CreateValidationProblem(roleResult));
+        }
+
         return Ok(await jwtTokenService.CreateAsync(user));
     }
 
@@ -78,7 +95,7 @@ public sealed class AuthController(
             return Unauthorized();
         }
 
-        var roles = await userManager.GetRolesAsync(user);
+        var roles = (await userManager.GetRolesAsync(user)).ToArray();
         return Ok(new UserResponse(user.Id, user.FullName, user.Email ?? string.Empty, roles));
     }
 
@@ -92,14 +109,23 @@ public sealed class AuthController(
             return Unauthorized();
         }
 
-        user.FullName = request.FullName.Trim();
+        var fullName = request.FullName.Trim();
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return BadRequest(new ValidationProblemDetails(new Dictionary<string, string[]>
+            {
+                [nameof(request.FullName)] = ["Full name is required."]
+            }));
+        }
+
+        user.FullName = fullName;
         var result = await userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {
-            return ValidationProblem(ToValidationDictionary(result));
+            return BadRequest(CreateValidationProblem(result));
         }
 
-        var roles = await userManager.GetRolesAsync(user);
+        var roles = (await userManager.GetRolesAsync(user)).ToArray();
         return Ok(new UserResponse(user.Id, user.FullName, user.Email ?? string.Empty, roles));
     }
 
@@ -114,7 +140,7 @@ public sealed class AuthController(
         }
 
         var result = await userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
-        return result.Succeeded ? NoContent() : ValidationProblem(ToValidationDictionary(result));
+        return result.Succeeded ? NoContent() : BadRequest(CreateValidationProblem(result));
     }
 
     [HttpPost("forgot-password")]
@@ -128,12 +154,7 @@ public sealed class AuthController(
         }
 
         var token = await userManager.GeneratePasswordResetTokenAsync(user);
-        if (environment.IsDevelopment())
-        {
-            return Accepted(new { resetToken = token });
-        }
-
-        return Accepted();
+        return environment.IsDevelopment() ? Accepted(new { resetToken = token }) : Accepted();
     }
 
     [HttpPost("reset-password")]
@@ -147,7 +168,7 @@ public sealed class AuthController(
         }
 
         var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
-        return result.Succeeded ? NoContent() : ValidationProblem(ToValidationDictionary(result));
+        return result.Succeeded ? NoContent() : BadRequest(CreateValidationProblem(result));
     }
 
     private async Task<ApplicationUser?> GetCurrentUserAsync()
@@ -156,8 +177,8 @@ public sealed class AuthController(
         return Guid.TryParse(id, out var userId) ? await userManager.FindByIdAsync(userId.ToString()) : null;
     }
 
-    private static Dictionary<string, string[]> ToValidationDictionary(IdentityResult result) =>
-        result.Errors
+    private static ValidationProblemDetails CreateValidationProblem(IdentityResult result) =>
+        new(result.Errors
             .GroupBy(error => error.Code)
-            .ToDictionary(group => group.Key, group => group.Select(error => error.Description).ToArray());
+            .ToDictionary(group => group.Key, group => group.Select(error => error.Description).ToArray()));
 }
