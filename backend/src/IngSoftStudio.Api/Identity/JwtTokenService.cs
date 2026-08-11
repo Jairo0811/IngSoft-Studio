@@ -15,6 +15,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options, UserManager<Ap
     public async Task<AuthResponse> CreateAsync(ApplicationUser user)
     {
         var roles = await userManager.GetRolesAsync(user);
+        var roleArray = roles.ToArray();
         var expiresAtUtc = DateTime.UtcNow.AddMinutes(_options.ExpirationMinutes);
 
         var claims = new List<Claim>
@@ -25,7 +26,7 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options, UserManager<Ap
             new(ClaimTypes.Name, user.FullName)
         };
 
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(roleArray.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SigningKey)),
@@ -41,6 +42,6 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options, UserManager<Ap
         return new AuthResponse(
             new JwtSecurityTokenHandler().WriteToken(token),
             expiresAtUtc,
-            new UserResponse(user.Id, user.FullName, user.Email ?? string.Empty, roles));
+            new UserResponse(user.Id, user.FullName, user.Email ?? string.Empty, roleArray));
     }
 }
