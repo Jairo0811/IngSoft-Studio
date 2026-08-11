@@ -1,17 +1,12 @@
 <div align="center">
 
-<img
-  src="./docs/images/ingsoft-studio-banner.png"
-  alt="Portada de IngSoft Studio"
-  width="100%"
-/>
+<img src="./docs/images/ingsoft-studio-banner.png" alt="Portada de IngSoft Studio" width="100%" />
 
 <br/>
 
- <img src="https://img.shields.io/badge/ITLA-2017--C3-0057B8?style=for-the-badge" alt="ITLA 2017-C3" />
+<img src="https://img.shields.io/badge/ITLA-2017--C3-0057B8?style=for-the-badge" alt="ITLA 2017-C3" />
 
-<br/>
-<br/>
+<br/><br/>
 
 ![Estado](https://img.shields.io/badge/Estado-Fase%201%20completada-22C55E?style=for-the-badge)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
@@ -88,16 +83,13 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - Entity Framework Core 10.0.8
 - SQL Server LocalDB / SQL Server Express
 - Swagger / OpenAPI
-- Microsoft.OpenApi 2.11.0
-- Swashbuckle.AspNetCore 10.1.0
-- Serilog.AspNetCore 10.0.0
 - FluentValidation
 - Mapster
 
 ### Frontend
 
 <p>
-  <img src="https://skillicons.dev/icons?i=react,ts,vite" alt="React, TypeScript y Vite" />
+  <img src="https://skillicons.dev/icons?i=react,ts,vite,tailwind" alt="React, TypeScript, Vite y Tailwind CSS" />
 </p>
 
 - React 19
@@ -110,7 +102,6 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - Zod
 - Recharts
 - React Flow
-- Lucide React
 
 ### Base de datos
 
@@ -125,7 +116,14 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 ### Calidad y automatización
 
 <p>
-  <img src="https://skillicons.dev/icons?i=git,github" alt="Git y GitHub" />
+  <img src="https://skillicons.dev/icons?i=git,github,githubactions" alt="Git, GitHub y GitHub Actions" />
+</p>
+
+<p>
+  <img src="https://img.shields.io/badge/GitHub%20Actions-CI-2088FF?style=flat-square&logo=githubactions&logoColor=white" alt="GitHub Actions" />
+  <img src="https://img.shields.io/badge/xUnit-Tests-512BD4?style=flat-square&logo=dotnet&logoColor=white" alt="xUnit" />
+  <img src="https://img.shields.io/badge/Vitest-Tests-6E9F18?style=flat-square&logo=vitest&logoColor=white" alt="Vitest" />
+  <img src="https://img.shields.io/badge/Playwright-E2E-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright" />
 </p>
 
 - xUnit
@@ -140,34 +138,24 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 
 ## 🏗️ Arquitectura
 
-IngSoft Studio utiliza una **Clean Architecture pragmática** organizada como **monolito modular**. Esta decisión mantiene una separación clara de responsabilidades sin introducir la complejidad prematura de microservicios.
+IngSoft Studio utiliza una **Clean Architecture pragmática** organizada como **monolito modular**.
 
 ```text
 IngSoft-Studio/
-├── backend/
-│   └── src/
-│       ├── IngSoftStudio.Domain/
-│       ├── IngSoftStudio.Application/
-│       ├── IngSoftStudio.Infrastructure/
-│       └── IngSoftStudio.Api/
-├── frontend/
-│   └── ingsoft-studio-web/
+├── backend/src/
+│   ├── IngSoftStudio.Domain/
+│   ├── IngSoftStudio.Application/
+│   ├── IngSoftStudio.Infrastructure/
+│   └── IngSoftStudio.Api/
+├── frontend/ingsoft-studio-web/
 ├── docs/
 ├── .github/workflows/
 └── README.md
 ```
 
-Regla de dependencias:
-
 ```text
 Domain ← Application ← Infrastructure ← API
 ```
-
-- **Domain:** entidades, reglas de negocio y enumeraciones.
-- **Application:** casos de uso, DTO, contratos y validaciones.
-- **Infrastructure:** persistencia, EF Core, SQL Server y servicios técnicos.
-- **API:** endpoints, middleware, configuración y documentación OpenAPI.
-- **Frontend:** interfaz React modular y desacoplada de la implementación interna del backend.
 
 ---
 
@@ -181,8 +169,6 @@ Domain ← Application ← Infrastructure ← API
 - Arquitectura modular
 - Seguridad por diseño
 - Código mantenible y escalable
-- Validación centralizada
-- Documentación orientada al valor
 
 ---
 
@@ -199,8 +185,6 @@ Domain ← Application ← Infrastructure ← API
 | 📚 Naturaleza de la materia | Teórica |
 | 💡 Idea de reconstrucción | Francis Jairo Matías Rosario |
 
----
-
 ## 👥 Integrantes del grupo original
 
 | Nombre completo | Matrícula |
@@ -211,12 +195,6 @@ Domain ← Application ← Infrastructure ← API
 | 👨‍🎓 **José Andres Durán Diaz** | 2015-3035 |
 | 👨‍🎓 **Fidel Ernesto Acosta Morillo** | 2015-3045 |
 
-> El grupo participó en los trabajos académicos originales. La reconstrucción moderna de IngSoft Studio corresponde a una iniciativa posterior desarrollada por Francis Jairo Matías Rosario.
-
-### Reencuentro académico
-
-**Pedro Arturo de León Parra** también formó parte del grupo de **Auditoría Informática (SOF-009)** que posteriormente inspiró el proyecto [AuditCore](https://github.com/Jairo0811/AuditCore). IngSoft Studio representa, por tanto, un nuevo capítulo de colaboración académica entre compañeros que ya habían compartido otra asignatura del ITLA.
-
 ---
 
 ## 📦 Estado actual
@@ -225,64 +203,50 @@ La **Fase 1 — Fundación técnica está completada**. La base full stack se en
 
 | Área | Estado | Detalle |
 |---|---|---|
-| Backend ASP.NET Core | ✅ Base creada | Proyectos Domain, Application, Infrastructure y API |
-| Frontend React | ✅ Base creada | Dashboard inicial con React, TypeScript y Vite |
-| Arquitectura modular | ✅ Configurada | Separación de capas y responsabilidades |
-| Primer módulo de proyectos | 🟡 Inicial | Entidad, servicio y endpoints básicos |
-| SQL Server | ✅ Inicializado | DbContext y migración inicial `InitialCreate` |
-| Swagger / OpenAPI | ✅ Configurado | OpenAPI actualizado y dependencia vulnerable fijada |
-| Dependencias backend | ✅ Estabilizadas | .NET 10, EF Core 10.0.8, OpenAPI 2.11.0 y Swashbuckle 10.1.0 |
-| Logging | ✅ Estabilizado | Serilog usa CultureInfo.InvariantCulture para cumplir CA1305 |
-| GitHub Actions | ✅ En verde | Restore, build y pruebas del backend, además del build del frontend |
-| Pruebas automatizadas | ✅ Base creada | Pruebas xUnit y FluentAssertions para invariantes principales de `Project` |
-| Autenticación | 🚧 Pendiente | Usuarios, roles y permisos |
-| Módulos funcionales | 🚧 Pendiente | Requisitos, riesgos, calidad, testing y simulación |
-
-> ✅ La Fase 1 quedó cerrada con compilación, pruebas y CI en verde. El siguiente bloque de desarrollo es **Fase 2 — Identidad y acceso**.
+| Backend ASP.NET Core | ✅ | Domain, Application, Infrastructure y API |
+| Frontend React | ✅ | React, TypeScript y Vite |
+| SQL Server | ✅ | DbContext y migración inicial |
+| Swagger / OpenAPI | ✅ | Configurado |
+| GitHub Actions | ✅ En verde | Restore, build, tests y frontend build |
+| Pruebas automatizadas | ✅ | xUnit y FluentAssertions |
+| Autenticación | 🚧 | Pendiente |
+| Módulos funcionales | 🚧 | Próximas fases |
 
 ---
 
 ## 🗺️ Roadmap
 
 ### ✅ Fase 1 — Fundación técnica
-
 - [x] Arquitectura backend
 - [x] Proyecto frontend
 - [x] Dashboard inicial
 - [x] Primer módulo de proyectos
 - [x] Swagger / OpenAPI
 - [x] GitHub Actions
-- [x] Actualizar dependencias vulnerables
-- [x] Compilación completa del backend en CI
 - [x] Migración inicial de SQL Server
 - [x] Pruebas base
 
 ### Fase 2 — Identidad y acceso
-
 - [ ] Registro e inicio de sesión
 - [ ] Roles y permisos
 - [ ] Recuperación de contraseña
 - [ ] Perfil de usuario
 
 ### Fase 3 — Proyectos y requisitos
-
 - [ ] Gestión completa de proyectos
-- [ ] Requisitos funcionales y no funcionales
+- [ ] Requisitos
 - [ ] Historias de usuario
 - [ ] Casos de uso
 - [ ] Priorización MoSCoW
 
 ### Fase 4 — Calidad y pruebas
-
 - [ ] Riesgos
 - [ ] Métricas
 - [ ] Casos de prueba
 - [ ] Defectos
-- [ ] Evidencias
 - [ ] Matriz de trazabilidad
 
 ### Fase 5 — Simulación y reportes
-
 - [ ] Simulador de decisiones
 - [ ] Dashboard conectado a datos reales
 - [ ] Reportes PDF y Excel
@@ -292,13 +256,6 @@ La **Fase 1 — Fundación técnica está completada**. La base full stack se en
 
 ## ▶️ Ejecución local
 
-### Requisitos
-
-- .NET 10 SDK
-- Node.js LTS
-- SQL Server LocalDB o SQL Server Express
-- Git
-
 ### Backend
 
 ```powershell
@@ -307,17 +264,7 @@ dotnet restore
 dotnet run
 ```
 
-### Migraciones de base de datos
-
-Desde `backend/src/IngSoftStudio.Api`:
-
-```powershell
-dotnet ef database update --project ../IngSoftStudio.Infrastructure/IngSoftStudio.Infrastructure.csproj
-```
-
-### Pruebas backend
-
-Desde la raíz del repositorio:
+### Pruebas
 
 ```powershell
 dotnet test backend/tests/IngSoftStudio.Domain.Tests/IngSoftStudio.Domain.Tests.csproj
@@ -335,9 +282,7 @@ npm run dev
 
 ## 📚 Proyecto relacionado
 
-- [AuditCore](https://github.com/Jairo0811/AuditCore) — plataforma de gestión de auditorías de TI inspirada en la asignatura Auditoría Informática (SOF-009).
-
-Ambos proyectos convierten materias teóricas del ITLA en aplicaciones web profesionales, preservando su contexto académico y evolucionándolo hacia soluciones modernas de portafolio.
+- [AuditCore](https://github.com/Jairo0811/AuditCore) — plataforma de gestión de auditorías de TI inspirada en Auditoría Informática (SOF-009).
 
 ---
 
@@ -345,14 +290,10 @@ Ambos proyectos convierten materias teóricas del ITLA en aplicaciones web profe
 
 Licencia pendiente de definición.
 
----
-
 <div align="center">
 
 ### IngSoft Studio
 
 **Planifica. Diseña. Construye. Mejora.**
-
-Desarrollado como reconstrucción moderna de una experiencia académica del ITLA.
 
 </div>
