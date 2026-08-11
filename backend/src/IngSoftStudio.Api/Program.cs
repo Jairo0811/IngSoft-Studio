@@ -123,17 +123,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
 
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-    foreach (var roleName in new[] { "Admin", "User" })
-    {
-        if (!await roleManager.RoleExistsAsync(roleName))
-        {
-            await roleManager.CreateAsync(new IdentityRole<Guid>(roleName));
-        }
-    }
-}
+await IdentitySeeder.SeedAsync(app.Services, app.Configuration);
 
 app.Run();
 
