@@ -11,6 +11,10 @@ export type AuthResponse = {
   user: User
 }
 
+export type ForgotPasswordResponse = {
+  resetToken?: string
+}
+
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
 const TOKEN_KEY = 'ingsoftstudio.accessToken'
 
@@ -34,7 +38,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     return undefined as T
   }
 
-  return response.json() as Promise<T>
+  const text = await response.text()
+  return (text ? JSON.parse(text) : undefined) as T
 }
 
 export const authService = {
@@ -55,6 +60,18 @@ export const authService = {
     localStorage.setItem(TOKEN_KEY, result.accessToken)
     return result
   },
+
+  forgotPassword: (email: string) =>
+    request<ForgotPasswordResponse>('/api/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+
+  resetPassword: (email: string, token: string, newPassword: string) =>
+    request<void>('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, token, newPassword }),
+    }),
 
   me: () => request<User>('/api/auth/me'),
 
