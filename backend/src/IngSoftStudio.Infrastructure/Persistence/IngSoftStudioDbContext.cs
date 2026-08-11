@@ -27,6 +27,7 @@ public sealed class IngSoftStudioDbContext(DbContextOptions<IngSoftStudioDbConte
         builder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
         builder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
         builder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
+        builder.Entity<IdentityUserPasskey<Guid>>().ToTable("UserPasskeys");
 
         builder.Entity<Project>(entity =>
         {
