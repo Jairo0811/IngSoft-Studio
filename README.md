@@ -8,7 +8,7 @@
 
 <br/><br/>
 
-![Estado](https://img.shields.io/badge/Estado-Fase%203%20implementada-22C55E?style=for-the-badge)
+![Estado](https://img.shields.io/badge/Estado-Fase%205%20implementada-22C55E?style=for-the-badge)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=0B1220)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -88,6 +88,8 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - SQL Server LocalDB / SQL Server Express
 - Swagger / OpenAPI
 - Serilog
+- QuestPDF 2026.7.2
+- ClosedXML 0.105.1
 
 ### Frontend
 
@@ -113,7 +115,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - Entity Framework Core Migrations
 - LocalDB para desarrollo local
 - Tablas de ASP.NET Core Identity integradas al mismo DbContext
-- Persistencia relacional de proyectos y requisitos
+- Persistencia relacional de proyectos, requisitos, calidad y resultados del simulador
 
 ### Calidad y automatización
 
@@ -158,7 +160,7 @@ Domain ← Application ← Infrastructure ← API
 
 - **Domain:** entidades y reglas de negocio.
 - **Application:** casos de uso, contratos y DTOs.
-- **Infrastructure:** EF Core, SQL Server, Identity y servicios técnicos.
+- **Infrastructure:** EF Core, SQL Server, Identity, reportes y servicios técnicos.
 - **API:** endpoints REST, autenticación JWT, autorización, middleware y OpenAPI.
 - **Frontend:** interfaz React modular desacoplada del backend.
 
@@ -210,13 +212,13 @@ Domain ← Application ← Infrastructure ← API
 
 ## 📦 Estado actual
 
-Las **Fases 1, 2 y 3** se encuentran implementadas. IngSoft Studio dispone de una base full stack estable, persistencia SQL Server, autenticación con ASP.NET Core Identity y JWT, gestión completa de proyectos y un módulo funcional de Ingeniería de Requisitos.
+Las **Fases 1, 2, 3, 4 y 5** se encuentran implementadas. IngSoft Studio dispone de una base full stack estable, autenticación y autorización, gestión de proyectos y requisitos, Quality Center, trazabilidad, simulación, reportes y un centro de aprendizaje conectado a datos reales.
 
 | Área | Estado | Detalle |
 |---|---|---|
 | Backend ASP.NET Core | ✅ | Domain, Application, Infrastructure y API |
-| Frontend React | ✅ | React 19, TypeScript, Vite y workspace de proyectos/requisitos |
-| SQL Server | ✅ | DbContext, Identity y migración `AddRequirements` |
+| Frontend React | ✅ | React 19, TypeScript, Vite, Projects, Quality Center y Studio Insights |
+| SQL Server | ✅ | DbContext, Identity, requisitos, calidad y `SimulationAttempts` |
 | Swagger / OpenAPI | ✅ | Configurado con autenticación Bearer |
 | GitHub Actions | ✅ | Restore, build, tests de dominio, tests de integración y frontend build |
 | Pruebas automatizadas | ✅ | xUnit, FluentAssertions y WebApplicationFactory |
@@ -227,10 +229,15 @@ Las **Fases 1, 2 y 3** se encuentran implementadas. IngSoft Studio dispone de un
 | Gestión de proyectos | ✅ | CRUD y ciclo de vida Draft, Active, Completed y Archived |
 | Ingeniería de requisitos | ✅ | Funcionales, no funcionales, historias de usuario y casos de uso |
 | MoSCoW | ✅ | Must, Should, Could y Won't |
-| Criterios de aceptación | ✅ | Persistencia y edición por requisito |
-| Trazabilidad básica | ✅ | Fuente/stakeholder/documento asociado al requisito |
-| Workspace React | ✅ | Gestión visual de proyectos y requisitos protegida por autenticación |
-| Calidad, pruebas y trazabilidad avanzada | 🚧 | Fase 4 |
+| Calidad y pruebas | ✅ | Riesgos, métricas, casos de prueba, ejecuciones y defectos |
+| Matriz de trazabilidad | ✅ | Requirement → Test Case → Defect |
+| Dashboard ejecutivo | ✅ | Portafolio y métricas conectadas a datos reales |
+| Indicadores por proyecto | ✅ | Cobertura, pass rate, defectos, riesgos y comparación |
+| Simulador | ✅ | 5 escenarios, puntuación, feedback e historial persistente por usuario |
+| Centro de aprendizaje | ✅ | Requisitos, SOLID, testing, riesgos, trazabilidad, cambios y releases |
+| Reportes | ✅ | PDF con QuestPDF y Excel con ClosedXML |
+| Studio Insights | ✅ | Workspace `/studio` con dashboard, reportes, simulación y aprendizaje |
+| Hardening y release | 🚧 | Fase 6 |
 
 ---
 
@@ -274,19 +281,28 @@ Las **Fases 1, 2 y 3** se encuentran implementadas. IngSoft Studio dispone de un
 - [x] Pruebas de dominio
 - [x] Pruebas de integración de API
 
-### Fase 4 — Calidad y pruebas
-- [ ] Riesgos
-- [ ] Métricas
-- [ ] Casos de prueba
-- [ ] Defectos
-- [ ] Evidencias
-- [ ] Matriz de trazabilidad
+### ✅ Fase 4 — Calidad y pruebas
+- [x] Riesgos
+- [x] Métricas
+- [x] Casos de prueba
+- [x] Ejecución de pruebas
+- [x] Defectos
+- [x] Matriz de trazabilidad
+- [x] Quality Center React
+- [x] Migración EF Core `AddQualityManagement`
 
-### Fase 5 — Simulación y reportes
-- [ ] Simulador de decisiones
-- [ ] Dashboard conectado a datos reales
-- [ ] Reportes PDF y Excel
-- [ ] Centro de aprendizaje
+### ✅ Fase 5 — Simulación y reportes
+- [x] Simulador de decisiones
+- [x] Historial y puntuación acumulada por usuario
+- [x] Dashboard conectado a datos reales
+- [x] Dashboard comparativo por proyecto
+- [x] Tendencias de requisitos, pruebas, defectos y riesgos
+- [x] Reportes PDF con QuestPDF
+- [x] Exportación Excel con ClosedXML
+- [x] Centro de aprendizaje
+- [x] Studio Insights React
+- [x] Migración EF Core `AddSimulationAttempts`
+- [x] Pruebas de dominio del simulador
 
 ### Fase 6 — Hardening y release
 - [ ] UX final y accesibilidad
@@ -347,7 +363,7 @@ npm install
 npm run dev
 ```
 
-> Ajusta `VITE_API_URL` al puerto real expuesto por la API en tu entorno local. El workspace de la Fase 3 se encuentra en `/projects`.
+> Ajusta `VITE_API_URL` al puerto real expuesto por la API en tu entorno local. Los workspaces principales están en `/projects`, `/quality` y `/studio`.
 
 ---
 
@@ -381,6 +397,20 @@ npm run dev
 | PUT | `/api/v1/projects/{projectId}/requirements/{id}` | Actualizar requisito |
 | PATCH | `/api/v1/projects/{projectId}/requirements/{id}/status` | Cambiar estado del requisito |
 | DELETE | `/api/v1/projects/{projectId}/requirements/{id}` | Eliminar requisito |
+
+## 📊 Endpoints principales de Studio Insights
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET | `/api/v1/studio/dashboard` | Dashboard global |
+| GET | `/api/v1/studio/projects` | Indicadores por proyecto |
+| GET | `/api/v1/studio/trends` | Tendencias comparativas |
+| GET | `/api/v1/studio/simulation/scenarios` | Escenarios del simulador |
+| POST | `/api/v1/studio/simulation/evaluate` | Evaluar y persistir una decisión |
+| GET | `/api/v1/studio/simulation/summary` | Historial y puntuación acumulada |
+| GET | `/api/v1/studio/learning` | Centro de aprendizaje |
+| GET | `/api/v1/studio/reports/pdf` | Descargar reporte PDF |
+| GET | `/api/v1/studio/reports/excel` | Descargar reporte Excel |
 
 ---
 
