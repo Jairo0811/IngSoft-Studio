@@ -27,32 +27,9 @@ internal sealed class IngSoftStudioDbContextModelSnapshot : ModelSnapshot
             b.Property<string>("Name").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
             b.Property<string>("Status").IsRequired().HasMaxLength(30).HasColumnType("nvarchar(30)");
             b.Property<DateTime?>("UpdatedAtUtc").HasColumnType("datetime2");
-            b.HasKey("Id"); b.HasIndex("Name"); b.ToTable("Projects");
-        });
-
-        modelBuilder.Entity("IngSoftStudio.Domain.Requirements.Requirement", b =>
-        {
-            b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uniqueidentifier");
-            b.Property<string>("AcceptanceCriteria").HasMaxLength(4000).HasColumnType("nvarchar(4000)");
-            b.Property<DateTime>("CreatedAtUtc").HasColumnType("datetime2");
-            b.Property<string>("Description").IsRequired().HasMaxLength(4000).HasColumnType("nvarchar(4000)");
-            b.Property<Guid>("ProjectId").HasColumnType("uniqueidentifier");
-            b.Property<string>("Source").HasMaxLength(500).HasColumnType("nvarchar(500)");
-            b.Property<DateTime?>("UpdatedAtUtc").HasColumnType("datetime2");
-            b.Property<string>("Title").IsRequired().HasMaxLength(200).HasColumnType("nvarchar(200)");
-            b.HasKey("Id"); b.HasIndex("ProjectId", "Priority"); b.ToTable("Requirements");
-        });
-
-        modelBuilder.Entity("IngSoftStudio.Domain.Studio.SimulationAttempt", b =>
-        {
-            b.Property<Guid>("Id").ValueGeneratedOnAdd().HasColumnType("uniqueidentifier");
-            b.Property<DateTime>("CreatedAtUtc").HasColumnType("datetime2");
-            b.Property<string>("Level").IsRequired().HasMaxLength(40).HasColumnType("nvarchar(40)");
-            b.Property<string>("OptionId").IsRequired().HasMaxLength(100).HasColumnType("nvarchar(100)");
-            b.Property<string>("ScenarioId").IsRequired().HasMaxLength(100).HasColumnType("nvarchar(100)");
-            b.Property<int>("Score").HasColumnType("int");
-            b.Property<Guid>("UserId").HasColumnType("uniqueidentifier");
-            b.HasKey("Id"); b.HasIndex("UserId", "CreatedAtUtc"); b.ToTable("SimulationAttempts");
+            b.HasKey("Id");
+            b.HasIndex("Name");
+            b.ToTable("Projects");
         });
 
         modelBuilder.Entity("IngSoftStudio.Infrastructure.Identity.ApplicationUser", b =>
@@ -86,12 +63,114 @@ internal sealed class IngSoftStudioDbContextModelSnapshot : ModelSnapshot
             b.Property<string>("ConcurrencyStamp").IsConcurrencyToken().HasColumnType("nvarchar(max)");
             b.Property<string>("Name").HasMaxLength(256).HasColumnType("nvarchar(256)");
             b.Property<string>("NormalizedName").HasMaxLength(256).HasColumnType("nvarchar(256)");
-            b.HasKey("Id"); b.HasIndex("NormalizedName").IsUnique().HasDatabaseName("RoleNameIndex").HasFilter("[NormalizedName] IS NOT NULL"); b.ToTable("Roles");
+            b.HasKey("Id");
+            b.HasIndex("NormalizedName").IsUnique().HasDatabaseName("RoleNameIndex").HasFilter("[NormalizedName] IS NOT NULL");
+            b.ToTable("Roles");
         });
 
-        modelBuilder.Entity("IngSoftStudio.Domain.Studio.SimulationAttempt", b =>
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
         {
-            b.HasOne("IngSoftStudio.Infrastructure.Identity.ApplicationUser", null).WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade).IsRequired();
+            b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
+            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+            b.Property<string>("ClaimType").HasColumnType("nvarchar(max)");
+            b.Property<string>("ClaimValue").HasColumnType("nvarchar(max)");
+            b.Property<Guid>("RoleId").HasColumnType("uniqueidentifier");
+            b.HasKey("Id");
+            b.HasIndex("RoleId");
+            b.ToTable("RoleClaims");
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+        {
+            b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
+            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+            b.Property<string>("ClaimType").HasColumnType("nvarchar(max)");
+            b.Property<string>("ClaimValue").HasColumnType("nvarchar(max)");
+            b.Property<Guid>("UserId").HasColumnType("uniqueidentifier");
+            b.HasKey("Id");
+            b.HasIndex("UserId");
+            b.ToTable("UserClaims");
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+        {
+            b.Property<string>("LoginProvider").HasMaxLength(128).HasColumnType("nvarchar(128)");
+            b.Property<string>("ProviderKey").HasMaxLength(128).HasColumnType("nvarchar(128)");
+            b.Property<string>("ProviderDisplayName").HasColumnType("nvarchar(max)");
+            b.Property<Guid>("UserId").HasColumnType("uniqueidentifier");
+            b.HasKey("LoginProvider", "ProviderKey");
+            b.HasIndex("UserId");
+            b.ToTable("UserLogins");
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+        {
+            b.Property<Guid>("UserId").HasColumnType("uniqueidentifier");
+            b.Property<Guid>("RoleId").HasColumnType("uniqueidentifier");
+            b.HasKey("UserId", "RoleId");
+            b.HasIndex("RoleId");
+            b.ToTable("UserRoles");
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+        {
+            b.Property<Guid>("UserId").HasColumnType("uniqueidentifier");
+            b.Property<string>("LoginProvider").HasMaxLength(128).HasColumnType("nvarchar(128)");
+            b.Property<string>("Name").HasMaxLength(128).HasColumnType("nvarchar(128)");
+            b.Property<string>("Value").HasColumnType("nvarchar(max)");
+            b.HasKey("UserId", "LoginProvider", "Name");
+            b.ToTable("UserTokens");
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
+        {
+            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                .WithMany()
+                .HasForeignKey("RoleId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
+        {
+            b.HasOne("IngSoftStudio.Infrastructure.Identity.ApplicationUser", null)
+                .WithMany()
+                .HasForeignKey("UserId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
+        {
+            b.HasOne("IngSoftStudio.Infrastructure.Identity.ApplicationUser", null)
+                .WithMany()
+                .HasForeignKey("UserId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
+        {
+            b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
+                .WithMany()
+                .HasForeignKey("RoleId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+            b.HasOne("IngSoftStudio.Infrastructure.Identity.ApplicationUser", null)
+                .WithMany()
+                .HasForeignKey("UserId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
+        {
+            b.HasOne("IngSoftStudio.Infrastructure.Identity.ApplicationUser", null)
+                .WithMany()
+                .HasForeignKey("UserId")
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         });
 #pragma warning restore 612, 618
     }
