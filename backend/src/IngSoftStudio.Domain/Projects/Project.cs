@@ -2,15 +2,12 @@ namespace IngSoftStudio.Domain.Projects;
 
 public sealed class Project
 {
-    private Project()
-    {
-    }
+    private Project() { }
 
     public Project(string name, string? description)
     {
         Id = Guid.NewGuid();
-        Rename(name);
-        Description = Normalize(description);
+        Update(name, description);
         Status = ProjectStatus.Draft;
         CreatedAtUtc = DateTime.UtcNow;
     }
@@ -22,25 +19,23 @@ public sealed class Project
     public DateTime CreatedAtUtc { get; private set; }
     public DateTime? UpdatedAtUtc { get; private set; }
 
-    public void Rename(string name)
+    public void Update(string name, string? description)
     {
-        if (string.IsNullOrWhiteSpace(name))
-        {
-            throw new ArgumentException("Project name is required.", nameof(name));
-        }
-
+        if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Project name is required.", nameof(name));
         Name = name.Trim();
+        Description = Normalize(description);
         UpdatedAtUtc = DateTime.UtcNow;
     }
 
-    private static string? Normalize(string? value) =>
-        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+    public void Rename(string name) => Update(name, Description);
+
+    public void ChangeStatus(ProjectStatus status)
+    {
+        Status = status;
+        UpdatedAtUtc = DateTime.UtcNow;
+    }
+
+    private static string? Normalize(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }
 
-public enum ProjectStatus
-{
-    Draft = 1,
-    Active = 2,
-    Completed = 3,
-    Archived = 4
-}
+public enum ProjectStatus { Draft = 1, Active = 2, Completed = 3, Archived = 4 }

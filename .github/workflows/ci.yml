@@ -28,11 +28,17 @@ jobs:
       - name: Build API
         run: dotnet build backend/src/IngSoftStudio.Api/IngSoftStudio.Api.csproj --configuration Release --no-restore
 
-      - name: Restore tests
+      - name: Restore domain tests
         run: dotnet restore backend/tests/IngSoftStudio.Domain.Tests/IngSoftStudio.Domain.Tests.csproj
 
-      - name: Test
+      - name: Run domain tests
         run: dotnet test backend/tests/IngSoftStudio.Domain.Tests/IngSoftStudio.Domain.Tests.csproj --configuration Release --no-restore
+
+      - name: Restore integration tests
+        run: dotnet restore backend/tests/IngSoftStudio.Api.IntegrationTests/IngSoftStudio.Api.IntegrationTests.csproj
+
+      - name: Run integration tests
+        run: dotnet test backend/tests/IngSoftStudio.Api.IntegrationTests/IngSoftStudio.Api.IntegrationTests.csproj --configuration Release --no-restore
 
   frontend:
     name: Frontend
