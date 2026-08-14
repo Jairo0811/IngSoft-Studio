@@ -43,6 +43,8 @@ public sealed class IngSoftStudioDbContext(DbContextOptions<IngSoftStudioDbConte
             entity.Property(x => x.Type).HasConversion<string>().HasMaxLength(30);
             entity.Property(x => x.Priority).HasConversion<string>().HasMaxLength(20);
             entity.Property(x => x.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(x => x.AcceptanceCriteria).HasMaxLength(4000);
+            entity.Property(x => x.Source).HasMaxLength(500);
             entity.HasIndex(x => new { x.ProjectId, x.Priority });
             entity.HasOne<Project>().WithMany().HasForeignKey(x => x.ProjectId).OnDelete(DeleteBehavior.Cascade);
         });
