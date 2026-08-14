@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
+export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
 export const TOKEN_KEY = 'ingsoftstudio.accessToken'
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
