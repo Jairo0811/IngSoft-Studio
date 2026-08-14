@@ -9,6 +9,8 @@ namespace IngSoftStudio.Infrastructure.Persistence.Migrations;
 [Migration("20260814180000_AddRequirements")]
 public sealed class AddRequirements : Migration
 {
+    private static readonly string[] ProjectPriorityColumns = ["ProjectId", "Priority"];
+
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateTable(
@@ -41,7 +43,7 @@ public sealed class AddRequirements : Migration
         migrationBuilder.CreateIndex(
             name: "IX_Requirements_ProjectId_Priority",
             table: "Requirements",
-            columns: new[] { "ProjectId", "Priority" });
+            columns: ProjectPriorityColumns);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder) => migrationBuilder.DropTable(name: "Requirements");
