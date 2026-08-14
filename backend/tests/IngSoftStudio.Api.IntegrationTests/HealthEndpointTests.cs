@@ -10,7 +10,9 @@ public sealed class HealthEndpointTests(ApiFactory factory) : IClassFixture<ApiF
     {
         using var client = factory.CreateClient();
 
-        var response = await client.GetAsync(new Uri("/health", UriKind.Relative));
+        var response = await client.GetAsync(
+            new Uri("/health", UriKind.Relative),
+            TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
