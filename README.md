@@ -8,13 +8,14 @@
 
 <br/><br/>
 
-![Estado](https://img.shields.io/badge/Estado-Fase%205%20implementada-22C55E?style=for-the-badge)
+![Estado](https://img.shields.io/badge/Estado-v1.0.0%20%7C%20Terminado-22C55E?style=for-the-badge)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=0B1220)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![SQL Server](https://img.shields.io/badge/SQL_Server-LocalDB-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean-14B8A6?style=for-the-badge)
 ![Identity](https://img.shields.io/badge/ASP.NET_Core-Identity-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![Accessibility](https://img.shields.io/badge/Accessibility-NORTIC_B2-0057B8?style=for-the-badge)
 
 > Plataforma web para gestionar, analizar y simular el ciclo de vida del desarrollo de software, desde los requisitos y el diseño hasta las pruebas, la calidad y el mantenimiento.
 
@@ -24,7 +25,7 @@
 
 **IngSoft Studio** es una plataforma web orientada a la gestión integral de proyectos de software. Centraliza requisitos, análisis, diseño, riesgos, métricas, pruebas, calidad, trazabilidad, mantenimiento y simulación de escenarios dentro de un único espacio de trabajo.
 
-El proyecto nace como una reconstrucción moderna de los contenidos estudiados en **Introducción a la Ingeniería en Software (SOF-015)** del Instituto Tecnológico de Las Américas. La asignatura fue principalmente teórica; esta nueva implementación convierte aquellos fundamentos en una aplicación real, modular y preparada para crecer como proyecto profesional de portafolio.
+El proyecto nace como una reconstrucción moderna de los contenidos estudiados en **Introducción a la Ingeniería en Software (SOF-015)** del Instituto Tecnológico de Las Américas. La asignatura fue principalmente teórica; esta implementación convierte aquellos fundamentos en una aplicación real, modular y preparada como proyecto profesional de portafolio.
 
 > 💡 La idea de transformar el trabajo académico en una plataforma de software fue concebida por **Francis Jairo Matías Rosario**.
 
@@ -42,31 +43,32 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 |---|---|
 | 📋 Requisitos | Requisitos funcionales y no funcionales, historias de usuario, casos de uso, criterios de aceptación y priorización MoSCoW |
 | 📐 Análisis y diseño | Casos de uso, arquitectura, componentes y decisiones técnicas |
-| 💻 Desarrollo | Planificación, tareas, estados y seguimiento del progreso |
-| 🧪 Pruebas | Casos de prueba, ejecuciones, evidencias, defectos y cobertura |
-| 🚀 Despliegue | Versiones, entregas, liberaciones y control de cambios |
-| 🔄 Mantenimiento | Incidencias, solicitudes de mejora y evolución continua |
+| 💻 Desarrollo | Planificación, estados y seguimiento del progreso |
+| 🧪 Pruebas | Casos de prueba, ejecuciones, defectos, métricas y cobertura |
+| 🚀 Despliegue | Reportes, liberaciones y criterios de release |
+| 🔄 Mantenimiento | Riesgos, incidencias, aprendizaje y mejora continua |
 
 ---
 
-## 🚀 Funcionalidades previstas
+## 🚀 Funcionalidades
 
-- 📊 Dashboard ejecutivo
-- 📁 Gestión de proyectos
+- 📊 Dashboard ejecutivo conectado a datos reales
+- 📁 Gestión completa de proyectos
 - 👥 Usuarios, roles y permisos
 - 📋 Ingeniería de requisitos
 - 🧭 Historias de usuario y casos de uso
 - ✅ Criterios de aceptación y fuente del requisito
-- 🏗️ Análisis y diseño de arquitectura
 - ⚠️ Gestión de riesgos
-- 📐 Métricas y estimaciones
-- 🧪 Gestión de pruebas y defectos
-- 🔗 Matriz de trazabilidad
-- ✅ Revisiones y aseguramiento de calidad
+- 📐 Métricas de calidad y cobertura
+- 🧪 Casos de prueba, ejecuciones y defectos
+- 🔗 Matriz de trazabilidad Requirement → Test Case → Defect
 - 📄 Reportes PDF y Excel
 - 🎮 Simulador de decisiones de Ingeniería de Software
 - 🎓 Centro de aprendizaje
-- 🔔 Notificaciones y seguimiento
+- 📈 Indicadores y tendencias por proyecto
+- ♿ Accesibilidad basada en NORTIC B2:2017
+- 📱 Diseño responsive para escritorio, tableta y móvil
+- 🔐 Hardening de seguridad para API
 
 ---
 
@@ -88,8 +90,8 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - SQL Server LocalDB / SQL Server Express
 - Swagger / OpenAPI
 - Serilog
-- QuestPDF 2026.7.2
-- ClosedXML 0.105.1
+- QuestPDF
+- ClosedXML
 
 ### Frontend
 
@@ -104,6 +106,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - TanStack Query
 - CSS responsive
 - Lucide React
+- HTML semántico y ARIA puntual
 
 ### Base de datos
 
@@ -115,7 +118,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - Entity Framework Core Migrations
 - LocalDB para desarrollo local
 - Tablas de ASP.NET Core Identity integradas al mismo DbContext
-- Persistencia relacional de proyectos, requisitos, calidad y resultados del simulador
+- Persistencia de proyectos, requisitos, calidad y resultados del simulador
 
 ### Calidad y automatización
 
@@ -151,6 +154,8 @@ IngSoft-Studio/
 ├── frontend/
 ├── docs/
 ├── .github/workflows/
+├── SECURITY.md
+├── CHANGELOG.md
 └── README.md
 ```
 
@@ -161,8 +166,8 @@ Domain ← Application ← Infrastructure ← API
 - **Domain:** entidades y reglas de negocio.
 - **Application:** casos de uso, contratos y DTOs.
 - **Infrastructure:** EF Core, SQL Server, Identity, reportes y servicios técnicos.
-- **API:** endpoints REST, autenticación JWT, autorización, middleware y OpenAPI.
-- **Frontend:** interfaz React modular desacoplada del backend.
+- **API:** endpoints REST, JWT, autorización, rate limiting, hardening, middleware y OpenAPI.
+- **Frontend:** interfaz React modular, responsive y accesible.
 
 ---
 
@@ -175,7 +180,55 @@ Domain ← Application ← Infrastructure ← API
 - Separación de responsabilidades
 - Arquitectura modular
 - Seguridad por diseño
+- Accesibilidad por diseño
 - Código mantenible y escalable
+
+---
+
+## ♿ Accesibilidad — NORTIC B2:2017
+
+La interfaz fue adecuada tomando como referencia la **Norma sobre Accesibilidad Web del Estado Dominicano NORTIC B2:2017**, con objetivo técnico de cubrir los criterios **A y AA aplicables** al proyecto.
+
+Entre las medidas implementadas se encuentran:
+
+- skip link para saltar al contenido principal;
+- navegación mediante teclado y foco visible;
+- labels visibles y nombres accesibles en formularios;
+- contraste reforzado y modo de alto contraste;
+- escalado de texto hasta 200 %;
+- títulos descriptivos por ruta;
+- idioma principal `es`;
+- mensajes de error textuales y regiones `aria-live`;
+- confirmación antes de acciones destructivas;
+- responsive/reflow para escritorio, tableta y móvil;
+- soporte para `prefers-reduced-motion`;
+- HTML semántico y uso limitado de ARIA a casos necesarios.
+
+> La adecuación del proyecto a estos lineamientos no representa una certificación oficial.
+
+Consulta el detalle técnico en [`docs/accessibility/NORTIC-B2-2017.md`](./docs/accessibility/NORTIC-B2-2017.md).
+
+---
+
+## 🔐 Seguridad y hardening
+
+- ASP.NET Core Identity y JWT Bearer
+- Política fuerte de contraseñas y lockout
+- Roles y autorización
+- CORS por origen permitido
+- Rate limiting global
+- HTTPS y HSTS fuera de Development
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: DENY`
+- `Referrer-Policy: no-referrer`
+- Content Security Policy para la API
+- Permissions Policy restrictiva
+- Problem Details y manejo centralizado de excepciones
+- Logging estructurado con Serilog
+- Endpoint de health check
+- Secretos mediante configuración/variables de entorno
+
+Consulta [`SECURITY.md`](./SECURITY.md).
 
 ---
 
@@ -212,104 +265,64 @@ Domain ← Application ← Infrastructure ← API
 
 ## 📦 Estado actual
 
-Las **Fases 1, 2, 3, 4 y 5** se encuentran implementadas. IngSoft Studio dispone de una base full stack estable, autenticación y autorización, gestión de proyectos y requisitos, Quality Center, trazabilidad, simulación, reportes y un centro de aprendizaje conectado a datos reales.
+Las **6 fases están completadas**. IngSoft Studio dispone de una base full stack estable, autenticación, autorización, persistencia SQL Server, gestión de proyectos y requisitos, Quality Center, trazabilidad, simulación, reportes, aprendizaje, diseño responsive, accesibilidad y hardening de seguridad.
 
 | Área | Estado | Detalle |
 |---|---|---|
 | Backend ASP.NET Core | ✅ | Domain, Application, Infrastructure y API |
-| Frontend React | ✅ | React 19, TypeScript, Vite, Projects, Quality Center y Studio Insights |
-| SQL Server | ✅ | DbContext, Identity, requisitos, calidad y `SimulationAttempts` |
-| Swagger / OpenAPI | ✅ | Configurado con autenticación Bearer |
-| GitHub Actions | ✅ | Restore, build, tests de dominio, tests de integración y frontend build |
-| Pruebas automatizadas | ✅ | xUnit, FluentAssertions y WebApplicationFactory |
-| Registro / Login | ✅ | ASP.NET Core Identity + JWT |
-| Roles y permisos | ✅ | Roles `Admin` y `User`; endpoints administrativos protegidos |
-| Perfil de usuario | ✅ | Consulta, edición y cambio de contraseña |
-| Recuperación de contraseña | ✅ Base | Tokens de Identity; token visible únicamente en Development |
-| Gestión de proyectos | ✅ | CRUD y ciclo de vida Draft, Active, Completed y Archived |
-| Ingeniería de requisitos | ✅ | Funcionales, no funcionales, historias de usuario y casos de uso |
-| MoSCoW | ✅ | Must, Should, Could y Won't |
-| Calidad y pruebas | ✅ | Riesgos, métricas, casos de prueba, ejecuciones y defectos |
-| Matriz de trazabilidad | ✅ | Requirement → Test Case → Defect |
-| Dashboard ejecutivo | ✅ | Portafolio y métricas conectadas a datos reales |
-| Indicadores por proyecto | ✅ | Cobertura, pass rate, defectos, riesgos y comparación |
-| Simulador | ✅ | 5 escenarios, puntuación, feedback e historial persistente por usuario |
-| Centro de aprendizaje | ✅ | Requisitos, SOLID, testing, riesgos, trazabilidad, cambios y releases |
-| Reportes | ✅ | PDF con QuestPDF y Excel con ClosedXML |
-| Studio Insights | ✅ | Workspace `/studio` con dashboard, reportes, simulación y aprendizaje |
-| Hardening y release | 🚧 | Fase 6 |
+| Frontend React | ✅ | Portada, autenticación, proyectos, Quality Center y Studio Insights |
+| SQL Server | ✅ | Identity, proyectos, requisitos, calidad y simulación |
+| GitHub Actions | ✅ | Build, pruebas de dominio, integración y frontend |
+| Identidad y acceso | ✅ | Registro, login, JWT, roles, perfil y recuperación |
+| Ingeniería de requisitos | ✅ | Tipos, MoSCoW, criterios y trazabilidad |
+| Calidad | ✅ | Riesgos, pruebas, defectos y métricas |
+| Reportes | ✅ | PDF y Excel |
+| Simulador | ✅ | Escenarios, feedback e historial persistente |
+| Responsive | ✅ | Desktop, tablet y móvil |
+| Accesibilidad | ✅ | NORTIC B2:2017 como referencia, objetivo A/AA aplicable |
+| Seguridad | ✅ | Rate limit, HSTS, headers, CORS, Identity y JWT |
+| Release | ✅ | Preparado para `v1.0.0` |
 
 ---
 
 ## 🗺️ Roadmap
 
 ### ✅ Fase 1 — Fundación técnica
-- [x] Arquitectura backend
-- [x] Proyecto frontend
-- [x] Dashboard inicial
-- [x] Primer módulo de proyectos
-- [x] Swagger / OpenAPI
-- [x] GitHub Actions
-- [x] Migración inicial de SQL Server
-- [x] Pruebas base
+- [x] Arquitectura backend y frontend
+- [x] SQL Server y migraciones
+- [x] CI y pruebas base
 
 ### ✅ Fase 2 — Identidad y acceso
-- [x] Registro e inicio de sesión
-- [x] JWT Bearer Authentication
-- [x] Roles `Admin` y `User`
-- [x] Administración básica de roles
-- [x] Protección de endpoints
-- [x] Recuperación y restablecimiento de contraseña
-- [x] Perfil de usuario
-- [x] Cambio de contraseña
-- [x] UI de login y registro
-- [x] UI de perfil y recuperación de contraseña
-- [x] Migración SQL Server para Identity
+- [x] Registro, login y JWT
+- [x] Roles y permisos
+- [x] Perfil y cambio de contraseña
+- [x] Recuperación de contraseña
 
 ### ✅ Fase 3 — Proyectos y requisitos
-- [x] Gestión completa de proyectos
-- [x] Ciclo de vida de proyectos
-- [x] Requisitos funcionales y no funcionales
-- [x] Historias de usuario
-- [x] Casos de uso
-- [x] Priorización MoSCoW
-- [x] Estados de requisitos
-- [x] Criterios de aceptación
-- [x] Trazabilidad básica por fuente
-- [x] Migración EF Core `AddRequirements`
-- [x] Workspace React de proyectos y requisitos
-- [x] Pruebas de dominio
-- [x] Pruebas de integración de API
+- [x] CRUD y ciclo de vida de proyectos
+- [x] Requisitos funcionales/no funcionales
+- [x] Historias de usuario y casos de uso
+- [x] MoSCoW, estados y criterios de aceptación
 
 ### ✅ Fase 4 — Calidad y pruebas
-- [x] Riesgos
-- [x] Métricas
-- [x] Casos de prueba
-- [x] Ejecución de pruebas
+- [x] Riesgos y métricas
+- [x] Casos y ejecución de pruebas
 - [x] Defectos
 - [x] Matriz de trazabilidad
-- [x] Quality Center React
-- [x] Migración EF Core `AddQualityManagement`
 
 ### ✅ Fase 5 — Simulación y reportes
-- [x] Simulador de decisiones
-- [x] Historial y puntuación acumulada por usuario
-- [x] Dashboard conectado a datos reales
-- [x] Dashboard comparativo por proyecto
-- [x] Tendencias de requisitos, pruebas, defectos y riesgos
-- [x] Reportes PDF con QuestPDF
-- [x] Exportación Excel con ClosedXML
+- [x] Dashboard real y tendencias
+- [x] Simulador e historial
+- [x] PDF y Excel
 - [x] Centro de aprendizaje
-- [x] Studio Insights React
-- [x] Migración EF Core `AddSimulationAttempts`
-- [x] Pruebas de dominio del simulador
 
-### Fase 6 — Hardening y release
-- [ ] UX final y accesibilidad
-- [ ] Seguridad y hardening
-- [ ] Observabilidad y auditoría
-- [ ] Documentación final
-- [ ] Release `v1.0.0`
+### ✅ Fase 6 — Hardening y release
+- [x] UX responsive
+- [x] Accesibilidad basada en NORTIC B2:2017
+- [x] Seguridad y hardening
+- [x] Health checks y logging
+- [x] Documentación final
+- [x] Preparación de release `v1.0.0`
 
 ---
 
@@ -324,27 +337,20 @@ Las **Fases 1, 2, 3, 4 y 5** se encuentran implementadas. IngSoft Studio dispone
 
 ### Backend
 
-La clave JWT **no se almacena en Git**. Antes de ejecutar la API, configura una clave local de al menos 32 caracteres:
-
 ```powershell
 $env:Jwt__SigningKey="TU_CLAVE_LOCAL_SEGURA_DE_AL_MENOS_32_CARACTERES"
+cd backend/src/IngSoftStudio.Api
+dotnet restore
+dotnet ef database update --project ../IngSoftStudio.Infrastructure/IngSoftStudio.Infrastructure.csproj
+dotnet run
 ```
 
-Opcionalmente puedes crear un administrador inicial mediante variables de entorno:
+Administrador inicial opcional:
 
 ```powershell
 $env:SeedAdmin__Email="admin@ingsoftstudio.local"
 $env:SeedAdmin__FullName="Administrador IngSoft Studio"
 $env:SeedAdmin__Password="CambiaEstaClave123!"
-```
-
-Aplica las migraciones y ejecuta la API:
-
-```powershell
-cd backend/src/IngSoftStudio.Api
-dotnet restore
-dotnet ef database update --project ../IngSoftStudio.Infrastructure/IngSoftStudio.Infrastructure.csproj
-dotnet run
 ```
 
 ### Pruebas
@@ -363,8 +369,6 @@ npm install
 npm run dev
 ```
 
-> Ajusta `VITE_API_URL` al puerto real expuesto por la API en tu entorno local. Los workspaces principales están en `/projects`, `/quality` y `/studio`.
-
 ---
 
 ## 🔐 Endpoints principales de identidad
@@ -379,38 +383,29 @@ npm run dev
 | PUT | `/api/auth/profile` | Autenticado |
 | POST | `/api/auth/change-password` | Autenticado |
 | GET | `/api/admin/users` | Admin |
-| PUT | `/api/admin/users/{userId}/roles/{roleName}` | Admin |
-| DELETE | `/api/admin/users/{userId}/roles/{roleName}` | Admin |
 
-## 📁 Endpoints principales de proyectos y requisitos
+## 📁 Proyectos y requisitos
 
-| Método | Endpoint | Descripción |
-|---|---|---|
-| GET | `/api/v1/projects` | Listar proyectos |
-| POST | `/api/v1/projects` | Crear proyecto |
-| GET | `/api/v1/projects/{id}` | Consultar proyecto |
-| PUT | `/api/v1/projects/{id}` | Actualizar proyecto |
-| PATCH | `/api/v1/projects/{id}/status` | Cambiar estado |
-| DELETE | `/api/v1/projects/{id}` | Eliminar proyecto |
-| GET | `/api/v1/projects/{projectId}/requirements` | Listar requisitos |
-| POST | `/api/v1/projects/{projectId}/requirements` | Crear requisito |
-| PUT | `/api/v1/projects/{projectId}/requirements/{id}` | Actualizar requisito |
-| PATCH | `/api/v1/projects/{projectId}/requirements/{id}/status` | Cambiar estado del requisito |
-| DELETE | `/api/v1/projects/{projectId}/requirements/{id}` | Eliminar requisito |
+| Método | Endpoint |
+|---|---|
+| GET/POST | `/api/v1/projects` |
+| GET/PUT/DELETE | `/api/v1/projects/{id}` |
+| PATCH | `/api/v1/projects/{id}/status` |
+| GET/POST | `/api/v1/projects/{projectId}/requirements` |
+| PUT/DELETE | `/api/v1/projects/{projectId}/requirements/{id}` |
 
-## 📊 Endpoints principales de Studio Insights
+## 📊 Studio y calidad
 
-| Método | Endpoint | Descripción |
-|---|---|---|
-| GET | `/api/v1/studio/dashboard` | Dashboard global |
-| GET | `/api/v1/studio/projects` | Indicadores por proyecto |
-| GET | `/api/v1/studio/trends` | Tendencias comparativas |
-| GET | `/api/v1/studio/simulation/scenarios` | Escenarios del simulador |
-| POST | `/api/v1/studio/simulation/evaluate` | Evaluar y persistir una decisión |
-| GET | `/api/v1/studio/simulation/summary` | Historial y puntuación acumulada |
-| GET | `/api/v1/studio/learning` | Centro de aprendizaje |
-| GET | `/api/v1/studio/reports/pdf` | Descargar reporte PDF |
-| GET | `/api/v1/studio/reports/excel` | Descargar reporte Excel |
+- `/api/v1/projects/{projectId}/quality`
+- `/api/v1/studio/dashboard`
+- `/api/v1/studio/projects`
+- `/api/v1/studio/trends`
+- `/api/v1/studio/simulation/scenarios`
+- `/api/v1/studio/simulation/evaluate`
+- `/api/v1/studio/simulation/summary`
+- `/api/v1/studio/learning`
+- `/api/v1/studio/reports/pdf`
+- `/api/v1/studio/reports/excel`
 
 ---
 
