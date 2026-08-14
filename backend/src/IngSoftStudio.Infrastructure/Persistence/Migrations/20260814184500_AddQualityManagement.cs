@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IngSoftStudio.Infrastructure.Persistence.Migrations;
 
+#pragma warning disable CA1861 // EF Core generated-style migration metadata uses inline column arrays.
 public partial class AddQualityManagement : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -91,3 +92,4 @@ public partial class AddQualityManagement : Migration
         migrationBuilder.DropTable(name: "TestCases");
     }
 }
+#pragma warning restore CA1861
