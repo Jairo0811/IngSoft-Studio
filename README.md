@@ -8,12 +8,13 @@
 
 <br/><br/>
 
-![Estado](https://img.shields.io/badge/Estado-Fase%201%20completada-22C55E?style=for-the-badge)
+![Estado](https://img.shields.io/badge/Estado-Fase%202%20implementada-22C55E?style=for-the-badge)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=0B1220)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![SQL Server](https://img.shields.io/badge/SQL_Server-LocalDB-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-Clean-14B8A6?style=for-the-badge)
+![Identity](https://img.shields.io/badge/ASP.NET_Core-Identity-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 
 > Plataforma web para gestionar, analizar y simular el ciclo de vida del desarrollo de software, desde los requisitos y el diseño hasta las pruebas, la calidad y el mantenimiento.
 
@@ -80,16 +81,17 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - C#
 - .NET 10
 - ASP.NET Core Web API
+- ASP.NET Core Identity
+- JWT Bearer Authentication
 - Entity Framework Core 10.0.8
 - SQL Server LocalDB / SQL Server Express
 - Swagger / OpenAPI
-- FluentValidation
-- Mapster
+- Serilog
 
 ### Frontend
 
 <p>
-  <img src="https://skillicons.dev/icons?i=react,ts,vite,tailwind" alt="React, TypeScript, Vite y Tailwind CSS" />
+  <img src="https://skillicons.dev/icons?i=react,ts,vite" alt="React, TypeScript y Vite" />
 </p>
 
 - React 19
@@ -97,11 +99,8 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - Vite
 - React Router
 - TanStack Query
-- Tailwind CSS
-- React Hook Form
-- Zod
-- Recharts
-- React Flow
+- CSS responsive
+- Lucide React
 
 ### Base de datos
 
@@ -112,6 +111,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - Microsoft SQL Server
 - Entity Framework Core Migrations
 - LocalDB para desarrollo local
+- Tablas de ASP.NET Core Identity integradas al mismo DbContext
 
 ### Calidad y automatización
 
@@ -122,16 +122,10 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 <p>
   <img src="https://img.shields.io/badge/GitHub%20Actions-CI-2088FF?style=flat-square&logo=githubactions&logoColor=white" alt="GitHub Actions" />
   <img src="https://img.shields.io/badge/xUnit-Tests-512BD4?style=flat-square&logo=dotnet&logoColor=white" alt="xUnit" />
-  <img src="https://img.shields.io/badge/Vitest-Tests-6E9F18?style=flat-square&logo=vitest&logoColor=white" alt="Vitest" />
-  <img src="https://img.shields.io/badge/Playwright-E2E-2EAD33?style=flat-square&logo=playwright&logoColor=white" alt="Playwright" />
 </p>
 
 - xUnit
 - FluentAssertions
-- NSubstitute
-- Vitest
-- React Testing Library
-- Playwright
 - GitHub Actions
 
 ---
@@ -142,12 +136,14 @@ IngSoft Studio utiliza una **Clean Architecture pragmática** organizada como **
 
 ```text
 IngSoft-Studio/
-├── backend/src/
-│   ├── IngSoftStudio.Domain/
-│   ├── IngSoftStudio.Application/
-│   ├── IngSoftStudio.Infrastructure/
-│   └── IngSoftStudio.Api/
-├── frontend/ingsoft-studio-web/
+├── backend/
+│   ├── src/
+│   │   ├── IngSoftStudio.Domain/
+│   │   ├── IngSoftStudio.Application/
+│   │   ├── IngSoftStudio.Infrastructure/
+│   │   └── IngSoftStudio.Api/
+│   └── tests/
+├── frontend/
 ├── docs/
 ├── .github/workflows/
 └── README.md
@@ -156,6 +152,12 @@ IngSoft-Studio/
 ```text
 Domain ← Application ← Infrastructure ← API
 ```
+
+- **Domain:** entidades y reglas de negocio.
+- **Application:** casos de uso, contratos y DTOs.
+- **Infrastructure:** EF Core, SQL Server, Identity y servicios técnicos.
+- **API:** endpoints REST, autenticación JWT, autorización, middleware y OpenAPI.
+- **Frontend:** interfaz React modular desacoplada del backend.
 
 ---
 
@@ -195,22 +197,32 @@ Domain ← Application ← Infrastructure ← API
 | 👨‍🎓 **José Andres Durán Diaz** | 2015-3035 |
 | 👨‍🎓 **Fidel Ernesto Acosta Morillo** | 2015-3045 |
 
+> El grupo participó en los trabajos académicos originales. La reconstrucción moderna de IngSoft Studio corresponde a una iniciativa posterior desarrollada por Francis Jairo Matías Rosario.
+
+### Reencuentro académico
+
+**Pedro Arturo de León Parra** también formó parte del grupo de **Auditoría Informática (SOF-009)** que posteriormente inspiró el proyecto [AuditCore](https://github.com/Jairo0811/AuditCore). IngSoft Studio representa, por tanto, un nuevo capítulo de continuidad académica entre proyectos nacidos de materias teóricas del ITLA.
+
 ---
 
 ## 📦 Estado actual
 
-La **Fase 1 — Fundación técnica está completada**. La base full stack se encuentra estable, con persistencia inicial en SQL Server mediante Entity Framework Core, pruebas de dominio y validación automatizada en GitHub Actions.
+Las **Fases 1 y 2** se encuentran implementadas. IngSoft Studio dispone de una base full stack estable, persistencia SQL Server, autenticación con ASP.NET Core Identity y JWT, autorización basada en roles, perfil de usuario y recuperación de contraseña.
 
 | Área | Estado | Detalle |
 |---|---|---|
 | Backend ASP.NET Core | ✅ | Domain, Application, Infrastructure y API |
-| Frontend React | ✅ | React, TypeScript y Vite |
-| SQL Server | ✅ | DbContext y migración inicial |
-| Swagger / OpenAPI | ✅ | Configurado |
-| GitHub Actions | ✅ En verde | Restore, build, tests y frontend build |
-| Pruebas automatizadas | ✅ | xUnit y FluentAssertions |
-| Autenticación | 🚧 | Pendiente |
-| Módulos funcionales | 🚧 | Próximas fases |
+| Frontend React | ✅ | React 19, TypeScript, Vite y rutas de identidad |
+| SQL Server | ✅ | DbContext, migración inicial y migración de Identity |
+| Swagger / OpenAPI | ✅ | Configurado con autenticación Bearer |
+| GitHub Actions | ✅ | Restore, build, tests y frontend build |
+| Pruebas automatizadas | ✅ Base | xUnit y FluentAssertions |
+| Registro / Login | ✅ | ASP.NET Core Identity + JWT |
+| Roles y permisos | ✅ | Roles `Admin` y `User`; endpoints administrativos protegidos |
+| Perfil de usuario | ✅ | Consulta, edición y cambio de contraseña |
+| Recuperación de contraseña | ✅ Base | Tokens de Identity; token visible únicamente en Development |
+| Rutas protegidas | ✅ | Módulo de proyectos requiere autenticación |
+| Módulos funcionales | 🚧 | Requisitos, calidad, pruebas, trazabilidad y simulación |
 
 ---
 
@@ -226,15 +238,22 @@ La **Fase 1 — Fundación técnica está completada**. La base full stack se en
 - [x] Migración inicial de SQL Server
 - [x] Pruebas base
 
-### Fase 2 — Identidad y acceso
-- [ ] Registro e inicio de sesión
-- [ ] Roles y permisos
-- [ ] Recuperación de contraseña
-- [ ] Perfil de usuario
+### ✅ Fase 2 — Identidad y acceso
+- [x] Registro e inicio de sesión
+- [x] JWT Bearer Authentication
+- [x] Roles `Admin` y `User`
+- [x] Administración básica de roles
+- [x] Protección de endpoints
+- [x] Recuperación y restablecimiento de contraseña
+- [x] Perfil de usuario
+- [x] Cambio de contraseña
+- [x] UI de login y registro
+- [x] UI de perfil y recuperación de contraseña
+- [x] Migración SQL Server para Identity
 
 ### Fase 3 — Proyectos y requisitos
 - [ ] Gestión completa de proyectos
-- [ ] Requisitos
+- [ ] Requisitos funcionales y no funcionales
 - [ ] Historias de usuario
 - [ ] Casos de uso
 - [ ] Priorización MoSCoW
@@ -244,6 +263,7 @@ La **Fase 1 — Fundación técnica está completada**. La base full stack se en
 - [ ] Métricas
 - [ ] Casos de prueba
 - [ ] Defectos
+- [ ] Evidencias
 - [ ] Matriz de trazabilidad
 
 ### Fase 5 — Simulación y reportes
@@ -256,11 +276,35 @@ La **Fase 1 — Fundación técnica está completada**. La base full stack se en
 
 ## ▶️ Ejecución local
 
+### Requisitos
+
+- .NET 10 SDK
+- Node.js 22+
+- SQL Server LocalDB o SQL Server Express
+- Git
+
 ### Backend
+
+La clave JWT **no se almacena en Git**. Antes de ejecutar la API, configura una clave local de al menos 32 caracteres:
+
+```powershell
+$env:Jwt__SigningKey="TU_CLAVE_LOCAL_SEGURA_DE_AL_MENOS_32_CARACTERES"
+```
+
+Opcionalmente puedes crear un administrador inicial mediante variables de entorno:
+
+```powershell
+$env:SeedAdmin__Email="admin@ingsoftstudio.local"
+$env:SeedAdmin__FullName="Administrador IngSoft Studio"
+$env:SeedAdmin__Password="CambiaEstaClave123!"
+```
+
+Aplica las migraciones y ejecuta la API:
 
 ```powershell
 cd backend/src/IngSoftStudio.Api
 dotnet restore
+dotnet ef database update --project ../IngSoftStudio.Infrastructure/IngSoftStudio.Infrastructure.csproj
 dotnet run
 ```
 
@@ -273,16 +317,38 @@ dotnet test backend/tests/IngSoftStudio.Domain.Tests/IngSoftStudio.Domain.Tests.
 ### Frontend
 
 ```powershell
-cd frontend/ingsoft-studio-web
+cd frontend
+$env:VITE_API_URL="http://localhost:5000"
 npm install
 npm run dev
 ```
+
+> Ajusta `VITE_API_URL` al puerto real expuesto por la API en tu entorno local.
+
+---
+
+## 🔐 Endpoints principales de identidad
+
+| Método | Endpoint | Acceso |
+|---|---|---|
+| POST | `/api/auth/register` | Público |
+| POST | `/api/auth/login` | Público |
+| POST | `/api/auth/forgot-password` | Público |
+| POST | `/api/auth/reset-password` | Público |
+| GET | `/api/auth/me` | Autenticado |
+| PUT | `/api/auth/profile` | Autenticado |
+| POST | `/api/auth/change-password` | Autenticado |
+| GET | `/api/admin/users` | Admin |
+| PUT | `/api/admin/users/{userId}/roles/{roleName}` | Admin |
+| DELETE | `/api/admin/users/{userId}/roles/{roleName}` | Admin |
 
 ---
 
 ## 📚 Proyecto relacionado
 
-- [AuditCore](https://github.com/Jairo0811/AuditCore) — plataforma de gestión de auditorías de TI inspirada en Auditoría Informática (SOF-009).
+- [AuditCore](https://github.com/Jairo0811/AuditCore) — plataforma de gestión de auditorías de TI inspirada en la asignatura Auditoría Informática (SOF-009).
+
+Ambos proyectos convierten materias teóricas del ITLA en aplicaciones web profesionales, preservando su contexto académico y evolucionándolo hacia soluciones modernas de portafolio.
 
 ---
 
@@ -290,10 +356,14 @@ npm run dev
 
 Licencia pendiente de definición.
 
+---
+
 <div align="center">
 
 ### IngSoft Studio
 
 **Planifica. Diseña. Construye. Mejora.**
+
+Desarrollado como reconstrucción moderna de una experiencia académica del ITLA.
 
 </div>
