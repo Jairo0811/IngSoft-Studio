@@ -35,6 +35,13 @@ public sealed class RequirementsController(IRequirementService service) : Contro
         return requirement is null ? NotFound() : Ok(requirement);
     }
 
+    [HttpPatch("{id:guid}/status")]
+    public async Task<ActionResult<RequirementResponse>> ChangeStatus(Guid projectId, Guid id, ChangeRequirementStatusRequest request, CancellationToken cancellationToken)
+    {
+        var requirement = await service.ChangeStatusAsync(projectId, id, request.Status, cancellationToken);
+        return requirement is null ? NotFound() : Ok(requirement);
+    }
+
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid projectId, Guid id, CancellationToken cancellationToken) =>
         await service.DeleteAsync(projectId, id, cancellationToken) ? NoContent() : NotFound();
