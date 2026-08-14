@@ -35,6 +35,14 @@ var app = builder.Build();
 app.UseExceptionHandler(); app.UseSerilogRequestLogging();
 if (app.Environment.IsDevelopment()) { app.UseSwagger(); app.UseSwaggerUI(); }
 app.UseHttpsRedirection(); app.UseCors("Frontend"); app.UseAuthentication(); app.UseAuthorization(); app.MapControllers(); app.MapGet("/health", () => Results.Ok(new { status = "Healthy" }));
+
+if (app.Configuration.GetValue<bool>("Database:EnsureCreated"))
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<IngSoftStudioDbContext>();
+    await dbContext.Database.EnsureCreatedAsync();
+}
+
 await IdentitySeeder.SeedAsync(app.Services, app.Configuration);
 app.Run();
 public partial class Program;
