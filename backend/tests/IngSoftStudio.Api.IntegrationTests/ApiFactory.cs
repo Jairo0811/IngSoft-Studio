@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace IngSoftStudio.Api.IntegrationTests;
 
@@ -23,10 +24,10 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.SingleOrDefault(service => service.ServiceType == typeof(DbContextOptions<IngSoftStudioDbContext>));
-            if (descriptor is not null) services.Remove(descriptor);
-
-            services.AddDbContext<IngSoftStudioDbContext>(options => options.UseInMemoryDatabase("IngSoftStudioIntegrationTests"));
+            services.RemoveAll<DbContextOptions<IngSoftStudioDbContext>>();
+            services.RemoveAll<IngSoftStudioDbContext>();
+            services.AddDbContext<IngSoftStudioDbContext>(options =>
+                options.UseInMemoryDatabase($"IngSoftStudioIntegrationTests-{Guid.NewGuid()}"));
         });
     }
 }
