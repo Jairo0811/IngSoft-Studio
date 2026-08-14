@@ -1,6 +1,7 @@
 using IngSoftStudio.Domain.Projects;
 using IngSoftStudio.Domain.Quality;
 using IngSoftStudio.Domain.Requirements;
+using IngSoftStudio.Domain.Studio;
 using IngSoftStudio.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,6 +17,7 @@ public sealed class IngSoftStudioDbContext(DbContextOptions<IngSoftStudioDbConte
     public DbSet<Risk> Risks => Set<Risk>();
     public DbSet<TestCase> TestCases => Set<TestCase>();
     public DbSet<Defect> Defects => Set<Defect>();
+    public DbSet<SimulationAttempt> SimulationAttempts => Set<SimulationAttempt>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -92,6 +94,17 @@ public sealed class IngSoftStudioDbContext(DbContextOptions<IngSoftStudioDbConte
             entity.HasOne<Project>().WithMany().HasForeignKey(x => x.ProjectId).OnDelete(DeleteBehavior.Cascade);
             entity.HasOne<Requirement>().WithMany().HasForeignKey(x => x.RequirementId).OnDelete(DeleteBehavior.NoAction);
             entity.HasOne<TestCase>().WithMany().HasForeignKey(x => x.TestCaseId).OnDelete(DeleteBehavior.NoAction);
+        });
+
+        builder.Entity<SimulationAttempt>(entity =>
+        {
+            entity.ToTable("SimulationAttempts");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.ScenarioId).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.OptionId).HasMaxLength(100).IsRequired();
+            entity.Property(x => x.Level).HasMaxLength(40).IsRequired();
+            entity.HasIndex(x => new { x.UserId, x.CreatedAtUtc });
+            entity.HasOne<ApplicationUser>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
