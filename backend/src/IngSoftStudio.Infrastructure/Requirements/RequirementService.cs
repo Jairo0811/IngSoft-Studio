@@ -16,7 +16,7 @@ public sealed class RequirementService(IngSoftStudioDbContext dbContext) : IRequ
     public async Task<RequirementResponse> CreateAsync(Guid projectId, CreateRequirementRequest request, CancellationToken cancellationToken)
     {
         if (!await dbContext.Projects.AnyAsync(x => x.Id == projectId, cancellationToken)) throw new KeyNotFoundException("Project not found.");
-        var requirement = new Requirement(projectId, request.Title, request.Description, request.Type, request.Priority);
+        var requirement = new Requirement(projectId, request.Title, request.Description, request.Type, request.Priority, request.AcceptanceCriteria, request.Source);
         dbContext.Requirements.Add(requirement);
         await dbContext.SaveChangesAsync(cancellationToken);
         return Map(requirement);
@@ -26,7 +26,16 @@ public sealed class RequirementService(IngSoftStudioDbContext dbContext) : IRequ
     {
         var requirement = await dbContext.Requirements.SingleOrDefaultAsync(x => x.ProjectId == projectId && x.Id == id, cancellationToken);
         if (requirement is null) return null;
-        requirement.Update(request.Title, request.Description, request.Type, request.Priority);
+        requirement.Update(request.Title, request.Description, request.Type, request.Priority, request.AcceptanceCriteria, request.Source);
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return Map(requirement);
+    }
+
+    public async Task<RequirementResponse?> ChangeStatusAsync(Guid projectId, Guid id, RequirementStatus status, CancellationToken cancellationToken)
+    {
+        var requirement = await dbContext.Requirements.SingleOrDefaultAsync(x => x.ProjectId == projectId && x.Id == id, cancellationToken);
+        if (requirement is null) return null;
+        requirement.ChangeStatus(status);
         await dbContext.SaveChangesAsync(cancellationToken);
         return Map(requirement);
     }
@@ -41,7 +50,7 @@ public sealed class RequirementService(IngSoftStudioDbContext dbContext) : IRequ
     }
 
     private static readonly System.Linq.Expressions.Expression<Func<Requirement, RequirementResponse>> MapExpression = x =>
-        new(x.Id, x.ProjectId, x.Title, x.Description, x.Type, x.Priority, x.Status, x.CreatedAtUtc, x.UpdatedAtUtc);
+        new(x.Id, x.ProjectId, x.Title, x.Description, x.Type, x.Priority, x.Status, x.AcceptanceCriteria, x.Source, x.CreatedAtUtc, x.UpdatedAtUtc);
 
-    private static RequirementResponse Map(Requirement x) => new(x.Id, x.ProjectId, x.Title, x.Description, x.Type, x.Priority, x.Status, x.CreatedAtUtc, x.UpdatedAtUtc);
+    private static RequirementResponse Map(Requirement x) => new(x.Id, x.ProjectId, x.Title, x.Description, x.Type, x.Priority, x.Status, x.AcceptanceCriteria, x.Source, x.CreatedAtUtc, x.UpdatedAtUtc);
 }
