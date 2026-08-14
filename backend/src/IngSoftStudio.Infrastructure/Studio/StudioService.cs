@@ -1,3 +1,4 @@
+using System.Globalization;
 using ClosedXML.Excel;
 using IngSoftStudio.Application.Studio;
 using IngSoftStudio.Domain.Projects;
@@ -108,7 +109,14 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
                 {
                     table.ColumnsDefinition(columns => { columns.RelativeColumn(3); columns.RelativeColumn(); columns.RelativeColumn(); columns.RelativeColumn(); columns.RelativeColumn(); });
                     table.Header(header => { header.Cell().Text("Proyecto").Bold(); header.Cell().Text("Req.").Bold(); header.Cell().Text("Tests").Bold(); header.Cell().Text("Defectos").Bold(); header.Cell().Text("Riesgos").Bold(); });
-                    foreach (var project in projects) { table.Cell().Text(project.ProjectName); table.Cell().Text(project.Requirements.ToString()); table.Cell().Text(project.Tests.ToString()); table.Cell().Text(project.OpenDefects.ToString()); table.Cell().Text(project.OpenRisks.ToString()); }
+                    foreach (var project in projects)
+                    {
+                        table.Cell().Text(project.ProjectName);
+                        table.Cell().Text(project.Requirements.ToString(CultureInfo.InvariantCulture));
+                        table.Cell().Text(project.Tests.ToString(CultureInfo.InvariantCulture));
+                        table.Cell().Text(project.OpenDefects.ToString(CultureInfo.InvariantCulture));
+                        table.Cell().Text(project.OpenRisks.ToString(CultureInfo.InvariantCulture));
+                    }
                 });
             });
             page.Footer().AlignCenter().Text("IngSoft Studio · Engineering Better Software").FontSize(9).FontColor(Colors.Grey.Medium);
