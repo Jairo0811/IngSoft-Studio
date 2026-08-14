@@ -10,27 +10,37 @@ namespace IngSoftStudio.Api.Controllers;
 public sealed class ProjectsController(IProjectService projectService) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType<IReadOnlyCollection<ProjectResponse>>(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyCollection<ProjectResponse>>> GetAll(CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyCollection<ProjectResponse>>> GetAll(CancellationToken cancellationToken) => Ok(await projectService.GetAllAsync(cancellationToken));
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ProjectResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var projects = await projectService.GetAllAsync(cancellationToken);
-        return Ok(projects);
+        var project = await projectService.GetByIdAsync(id, cancellationToken);
+        return project is null ? NotFound() : Ok(project);
     }
 
     [HttpPost]
-    [ProducesResponseType<ProjectResponse>(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<ProjectResponse>> Create(
-        [FromBody] CreateProjectRequest request,
-        CancellationToken cancellationToken)
+    public async Task<ActionResult<ProjectResponse>> Create(CreateProjectRequest request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            ModelState.AddModelError(nameof(request.Name), "Project name is required.");
-            return ValidationProblem(ModelState);
-        }
-
+        if (string.IsNullOrWhiteSpace(request.Name)) return ValidationProblem();
         var project = await projectService.CreateAsync(request, cancellationToken);
-        return Created($"api/v1/projects/{project.Id}", project);
+        return CreatedAtAction(nameof(GetById), new { id = project.Id }, project);
     }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<ProjectResponse>> Update(Guid id, UpdateProjectRequest request, CancellationToken cancellationToken)
+    {
+        var project = await projectService.UpdateAsync(id, request, cancellationToken);
+        return project is null ? NotFound() : Ok(project);
+    }
+
+    [HttpPatch("{id:guid}/status")]
+    public async Task<ActionResult<ProjectResponse>> ChangeStatus(Guid id, ChangeProjectStatusRequest request, CancellationToken cancellationToken)
+    {
+        var project = await projectService.ChangeStatusAsync(id, request.Status, cancellationToken);
+        return project is null ? NotFound() : Ok(project);
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken) => await projectService.DeleteAsync(id, cancellationToken) ? NoContent() : NotFound();
 }
