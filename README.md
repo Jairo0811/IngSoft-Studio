@@ -8,7 +8,7 @@
 
 <br/><br/>
 
-![Estado](https://img.shields.io/badge/Estado-v1.0.0%20%7C%20Terminado-22C55E?style=for-the-badge)
+![Estado](https://img.shields.io/badge/Estado-1.1.0%20%7C%20Terminado-22C55E?style=for-the-badge)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=0B1220)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -281,7 +281,7 @@ Las **6 fases están completadas**. IngSoft Studio dispone de una base full stac
 | Responsive | ✅ | Desktop, tablet y móvil |
 | Accesibilidad | ✅ | NORTIC B2:2017 como referencia, objetivo A/AA aplicable |
 | Seguridad | ✅ | Rate limit, HSTS, headers, CORS, Identity y JWT |
-| Release | ✅ | Preparado para `v1.0.0` |
+| Release | ✅ | Publicado como `1.1.0` |
 
 ---
 
@@ -322,7 +322,7 @@ Las **6 fases están completadas**. IngSoft Studio dispone de una base full stac
 - [x] Seguridad y hardening
 - [x] Health checks y logging
 - [x] Documentación final
-- [x] Preparación de release `v1.0.0`
+- [x] Release `1.1.0` publicado
 
 ---
 
