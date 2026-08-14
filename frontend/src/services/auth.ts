@@ -1,3 +1,5 @@
+import { apiRequest, TOKEN_KEY } from './api'
+
 export type User = {
   id: string
   fullName: string
@@ -15,36 +17,9 @@ export type ForgotPasswordResponse = {
   resetToken?: string
 }
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
-const TOKEN_KEY = 'ingsoftstudio.accessToken'
-
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = localStorage.getItem(TOKEN_KEY)
-  const response = await fetch(`${API_URL}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init?.headers,
-    },
-  })
-
-  if (!response.ok) {
-    const detail = await response.text()
-    throw new Error(detail || `Request failed with status ${response.status}`)
-  }
-
-  if (response.status === 204) {
-    return undefined as T
-  }
-
-  const text = await response.text()
-  return (text ? JSON.parse(text) : undefined) as T
-}
-
 export const authService = {
   async login(email: string, password: string) {
-    const result = await request<AuthResponse>('/api/auth/login', {
+    const result = await apiRequest<AuthResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     })
@@ -53,7 +28,7 @@ export const authService = {
   },
 
   async register(fullName: string, email: string, password: string) {
-    const result = await request<AuthResponse>('/api/auth/register', {
+    const result = await apiRequest<AuthResponse>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({ fullName, email, password }),
     })
@@ -61,35 +36,11 @@ export const authService = {
     return result
   },
 
-  forgotPassword: (email: string) =>
-    request<ForgotPasswordResponse>('/api/auth/forgot-password', {
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    }),
-
-  resetPassword: (email: string, token: string, newPassword: string) =>
-    request<void>('/api/auth/reset-password', {
-      method: 'POST',
-      body: JSON.stringify({ email, token, newPassword }),
-    }),
-
-  me: () => request<User>('/api/auth/me'),
-
-  updateProfile: (fullName: string) =>
-    request<User>('/api/auth/profile', {
-      method: 'PUT',
-      body: JSON.stringify({ fullName }),
-    }),
-
-  changePassword: (currentPassword: string, newPassword: string) =>
-    request<void>('/api/auth/change-password', {
-      method: 'POST',
-      body: JSON.stringify({ currentPassword, newPassword }),
-    }),
-
-  logout() {
-    localStorage.removeItem(TOKEN_KEY)
-  },
-
+  forgotPassword: (email: string) => apiRequest<ForgotPasswordResponse>('/api/auth/forgot-password', { method: 'POST', body: JSON.stringify({ email }) }),
+  resetPassword: (email: string, token: string, newPassword: string) => apiRequest<void>('/api/auth/reset-password', { method: 'POST', body: JSON.stringify({ email, token, newPassword }) }),
+  me: () => apiRequest<User>('/api/auth/me'),
+  updateProfile: (fullName: string) => apiRequest<User>('/api/auth/profile', { method: 'PUT', body: JSON.stringify({ fullName }) }),
+  changePassword: (currentPassword: string, newPassword: string) => apiRequest<void>('/api/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) }),
+  logout() { localStorage.removeItem(TOKEN_KEY) },
   hasToken: () => Boolean(localStorage.getItem(TOKEN_KEY)),
 }
