@@ -4,6 +4,7 @@ import AccountPage from './pages/AccountPage'
 import AuthPage from './pages/AuthPage'
 import PasswordRecoveryPage from './pages/PasswordRecoveryPage'
 import ProjectsPage from './pages/ProjectsPage'
+import QualityPage from './pages/QualityPage'
 
 const lifecycle = [
   { icon: FolderKanban, title: 'Requisitos', description: 'Define y gestiona requisitos funcionales y no funcionales.' },
@@ -25,6 +26,7 @@ function LandingPage() {
           <p className="lead">Plataforma integral para gestionar, analizar, planificar y simular el ciclo de vida del desarrollo de software.</p>
           <div className="actions">
             <Link className="primary-link" to="/projects">Abrir Studio</Link>
+            <Link className="secondary-link" to="/quality">Quality Center</Link>
             <Link className="secondary-link" to="/auth">Acceder</Link>
           </div>
         </div>
@@ -48,6 +50,7 @@ function App() {
     <Route path="/forgot-password" element={<PasswordRecoveryPage />} />
     <Route path="/account" element={<AccountPage />} />
     <Route path="/projects" element={<ProjectsPage />} />
+    <Route path="/quality" element={<QualityPage />} />
   </Routes>
 }
 
