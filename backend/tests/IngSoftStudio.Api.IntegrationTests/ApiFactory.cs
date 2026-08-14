@@ -2,6 +2,7 @@ using IngSoftStudio.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -20,6 +21,7 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureServices(services =>
         {
+            services.RemoveAll<IDatabaseProvider>();
             services.RemoveAll<DbContextOptions<IngSoftStudioDbContext>>();
             services.RemoveAll<IngSoftStudioDbContext>();
             services.AddDbContext<IngSoftStudioDbContext>(options =>
