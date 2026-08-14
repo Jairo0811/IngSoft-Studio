@@ -20,7 +20,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddProblemDetails();
 builder.Services.AddDbContext<IngSoftStudioDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddIdentityCore<ApplicationUser>(options => { options.Password.RequiredLength = 8; options.Password.RequireDigit = true; options.Password.RequireLowercase = true; options.Password.RequireUppercase = true; options.Password.RequireNonAlphanumeric = true; options.Lockout.MaxFailedAccessAttempts = 5; options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15); options.User.RequireUniqueEmail = true; }).AddRoles<IdentityRole<Guid>>().AddSignInManager().AddEntityFrameworkStores<IngSoftStudioDbContext>().AddDefaultTokenProviders();
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.Stores.SchemaVersion = IdentitySchemaVersions.Version2;
+    options.Password.RequiredLength = 8;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.User.RequireUniqueEmail = true;
+}).AddRoles<IdentityRole<Guid>>().AddSignInManager().AddEntityFrameworkStores<IngSoftStudioDbContext>().AddDefaultTokenProviders();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>() ?? throw new InvalidOperationException("JWT configuration is missing.");
 if (string.IsNullOrWhiteSpace(jwt.SigningKey) || jwt.SigningKey.Length < 32) throw new InvalidOperationException("Jwt:SigningKey must be configured with at least 32 characters.");
