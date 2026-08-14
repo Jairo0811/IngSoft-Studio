@@ -8,7 +8,7 @@
 
 <br/><br/>
 
-![Estado](https://img.shields.io/badge/Estado-Fase%202%20implementada-22C55E?style=for-the-badge)
+![Estado](https://img.shields.io/badge/Estado-Fase%203%20implementada-22C55E?style=for-the-badge)
 ![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=0B1220)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -40,7 +40,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 
 | Fase | Alcance dentro de IngSoft Studio |
 |---|---|
-| 📋 Requisitos | Requisitos funcionales y no funcionales, historias de usuario y priorización |
+| 📋 Requisitos | Requisitos funcionales y no funcionales, historias de usuario, casos de uso, criterios de aceptación y priorización MoSCoW |
 | 📐 Análisis y diseño | Casos de uso, arquitectura, componentes y decisiones técnicas |
 | 💻 Desarrollo | Planificación, tareas, estados y seguimiento del progreso |
 | 🧪 Pruebas | Casos de prueba, ejecuciones, evidencias, defectos y cobertura |
@@ -56,6 +56,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - 👥 Usuarios, roles y permisos
 - 📋 Ingeniería de requisitos
 - 🧭 Historias de usuario y casos de uso
+- ✅ Criterios de aceptación y fuente del requisito
 - 🏗️ Análisis y diseño de arquitectura
 - ⚠️ Gestión de riesgos
 - 📐 Métricas y estimaciones
@@ -112,6 +113,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - Entity Framework Core Migrations
 - LocalDB para desarrollo local
 - Tablas de ASP.NET Core Identity integradas al mismo DbContext
+- Persistencia relacional de proyectos y requisitos
 
 ### Calidad y automatización
 
@@ -126,6 +128,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 
 - xUnit
 - FluentAssertions
+- ASP.NET Core integration tests
 - GitHub Actions
 
 ---
@@ -207,22 +210,27 @@ Domain ← Application ← Infrastructure ← API
 
 ## 📦 Estado actual
 
-Las **Fases 1 y 2** se encuentran implementadas. IngSoft Studio dispone de una base full stack estable, persistencia SQL Server, autenticación con ASP.NET Core Identity y JWT, autorización basada en roles, perfil de usuario y recuperación de contraseña.
+Las **Fases 1, 2 y 3** se encuentran implementadas. IngSoft Studio dispone de una base full stack estable, persistencia SQL Server, autenticación con ASP.NET Core Identity y JWT, gestión completa de proyectos y un módulo funcional de Ingeniería de Requisitos.
 
 | Área | Estado | Detalle |
 |---|---|---|
 | Backend ASP.NET Core | ✅ | Domain, Application, Infrastructure y API |
-| Frontend React | ✅ | React 19, TypeScript, Vite y rutas de identidad |
-| SQL Server | ✅ | DbContext, migración inicial y migración de Identity |
+| Frontend React | ✅ | React 19, TypeScript, Vite y workspace de proyectos/requisitos |
+| SQL Server | ✅ | DbContext, Identity y migración `AddRequirements` |
 | Swagger / OpenAPI | ✅ | Configurado con autenticación Bearer |
-| GitHub Actions | ✅ | Restore, build, tests y frontend build |
-| Pruebas automatizadas | ✅ Base | xUnit y FluentAssertions |
+| GitHub Actions | ✅ | Restore, build, tests de dominio, tests de integración y frontend build |
+| Pruebas automatizadas | ✅ | xUnit, FluentAssertions y WebApplicationFactory |
 | Registro / Login | ✅ | ASP.NET Core Identity + JWT |
 | Roles y permisos | ✅ | Roles `Admin` y `User`; endpoints administrativos protegidos |
 | Perfil de usuario | ✅ | Consulta, edición y cambio de contraseña |
 | Recuperación de contraseña | ✅ Base | Tokens de Identity; token visible únicamente en Development |
-| Rutas protegidas | ✅ | Módulo de proyectos requiere autenticación |
-| Módulos funcionales | 🚧 | Requisitos, calidad, pruebas, trazabilidad y simulación |
+| Gestión de proyectos | ✅ | CRUD y ciclo de vida Draft, Active, Completed y Archived |
+| Ingeniería de requisitos | ✅ | Funcionales, no funcionales, historias de usuario y casos de uso |
+| MoSCoW | ✅ | Must, Should, Could y Won't |
+| Criterios de aceptación | ✅ | Persistencia y edición por requisito |
+| Trazabilidad básica | ✅ | Fuente/stakeholder/documento asociado al requisito |
+| Workspace React | ✅ | Gestión visual de proyectos y requisitos protegida por autenticación |
+| Calidad, pruebas y trazabilidad avanzada | 🚧 | Fase 4 |
 
 ---
 
@@ -251,12 +259,20 @@ Las **Fases 1 y 2** se encuentran implementadas. IngSoft Studio dispone de una b
 - [x] UI de perfil y recuperación de contraseña
 - [x] Migración SQL Server para Identity
 
-### Fase 3 — Proyectos y requisitos
-- [ ] Gestión completa de proyectos
-- [ ] Requisitos funcionales y no funcionales
-- [ ] Historias de usuario
-- [ ] Casos de uso
-- [ ] Priorización MoSCoW
+### ✅ Fase 3 — Proyectos y requisitos
+- [x] Gestión completa de proyectos
+- [x] Ciclo de vida de proyectos
+- [x] Requisitos funcionales y no funcionales
+- [x] Historias de usuario
+- [x] Casos de uso
+- [x] Priorización MoSCoW
+- [x] Estados de requisitos
+- [x] Criterios de aceptación
+- [x] Trazabilidad básica por fuente
+- [x] Migración EF Core `AddRequirements`
+- [x] Workspace React de proyectos y requisitos
+- [x] Pruebas de dominio
+- [x] Pruebas de integración de API
 
 ### Fase 4 — Calidad y pruebas
 - [ ] Riesgos
@@ -271,6 +287,13 @@ Las **Fases 1 y 2** se encuentran implementadas. IngSoft Studio dispone de una b
 - [ ] Dashboard conectado a datos reales
 - [ ] Reportes PDF y Excel
 - [ ] Centro de aprendizaje
+
+### Fase 6 — Hardening y release
+- [ ] UX final y accesibilidad
+- [ ] Seguridad y hardening
+- [ ] Observabilidad y auditoría
+- [ ] Documentación final
+- [ ] Release `v1.0.0`
 
 ---
 
@@ -312,6 +335,7 @@ dotnet run
 
 ```powershell
 dotnet test backend/tests/IngSoftStudio.Domain.Tests/IngSoftStudio.Domain.Tests.csproj
+dotnet test backend/tests/IngSoftStudio.Api.IntegrationTests/IngSoftStudio.Api.IntegrationTests.csproj
 ```
 
 ### Frontend
@@ -323,7 +347,7 @@ npm install
 npm run dev
 ```
 
-> Ajusta `VITE_API_URL` al puerto real expuesto por la API en tu entorno local.
+> Ajusta `VITE_API_URL` al puerto real expuesto por la API en tu entorno local. El workspace de la Fase 3 se encuentra en `/projects`.
 
 ---
 
@@ -341,6 +365,22 @@ npm run dev
 | GET | `/api/admin/users` | Admin |
 | PUT | `/api/admin/users/{userId}/roles/{roleName}` | Admin |
 | DELETE | `/api/admin/users/{userId}/roles/{roleName}` | Admin |
+
+## 📁 Endpoints principales de proyectos y requisitos
+
+| Método | Endpoint | Descripción |
+|---|---|---|
+| GET | `/api/v1/projects` | Listar proyectos |
+| POST | `/api/v1/projects` | Crear proyecto |
+| GET | `/api/v1/projects/{id}` | Consultar proyecto |
+| PUT | `/api/v1/projects/{id}` | Actualizar proyecto |
+| PATCH | `/api/v1/projects/{id}/status` | Cambiar estado |
+| DELETE | `/api/v1/projects/{id}` | Eliminar proyecto |
+| GET | `/api/v1/projects/{projectId}/requirements` | Listar requisitos |
+| POST | `/api/v1/projects/{projectId}/requirements` | Crear requisito |
+| PUT | `/api/v1/projects/{projectId}/requirements/{id}` | Actualizar requisito |
+| PATCH | `/api/v1/projects/{projectId}/requirements/{id}/status` | Cambiar estado del requisito |
+| DELETE | `/api/v1/projects/{projectId}/requirements/{id}` | Eliminar requisito |
 
 ---
 
