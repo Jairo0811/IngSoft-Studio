@@ -1,11 +1,12 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { authService } from '../services/auth'
 import { Project, projectsService, Requirement } from '../services/projects'
 import { QualityDashboard, qualityService } from '../services/quality'
 import './projects.css'
 
 export default function QualityPage() {
+  const location = useLocation()
   const [projects, setProjects] = useState<Project[]>([])
   const [requirements, setRequirements] = useState<Requirement[]>([])
   const [projectId, setProjectId] = useState('')
@@ -13,7 +14,7 @@ export default function QualityPage() {
   const [error, setError] = useState('')
   useEffect(() => { void loadProjects() }, [])
   useEffect(() => { if (projectId) void loadQuality(projectId) }, [projectId])
-  if (!authService.hasToken()) return <Navigate to="/auth" replace />
+  if (!authService.hasToken()) return <Navigate to="/auth" replace state={{ from: location.pathname }} />
 
   async function loadProjects() { try { const data = await projectsService.list(); setProjects(data); setProjectId(data[0]?.id || '') } catch { setError('No fue posible cargar los proyectos.') } }
   async function loadQuality(id: string) { try { setError(''); const [quality, reqs] = await Promise.all([qualityService.dashboard(id), projectsService.requirements(id)]); setDashboard(quality); setRequirements(reqs) } catch { setError('No fue posible cargar el centro de calidad.') } }
@@ -22,7 +23,7 @@ export default function QualityPage() {
   async function createDefect(event: FormEvent<HTMLFormElement>) { event.preventDefault(); if (!projectId) return; const form = new FormData(event.currentTarget); await qualityService.createDefect(projectId, { requirementId: form.get('requirementId') || null, testCaseId: form.get('testCaseId') || null, title: form.get('title'), description: form.get('description'), severity: Number(form.get('severity')), priority: Number(form.get('priority')) }); event.currentTarget.reset(); await loadQuality(projectId) }
 
   return <main className="workspace-shell" aria-labelledby="quality-title">
-    <header className="workspace-header"><div><p className="eyebrow">Fase 4 · Calidad y trazabilidad</p><h1 id="quality-title">Quality Center</h1><p>Riesgos, casos de prueba, defectos, métricas y cobertura de requisitos.</p></div><nav aria-label="Navegación del centro de calidad"><Link to="/projects">Proyectos</Link><Link to="/account">Mi cuenta</Link><Link to="/">Inicio</Link></nav></header>
+    <header className="workspace-header"><div><p className="eyebrow">Fase 4 · Calidad y trazabilidad</p><h1 id="quality-title">Quality Center</h1><p>Riesgos, casos de prueba, defectos, métricas y cobertura de requisitos.</p></div><nav aria-label="Navegación del centro de calidad"><Link to="/projects">Proyectos</Link><Link to="/quality">Quality Center</Link><Link to="/studio">Studio Insights</Link><Link to="/account">Mi cuenta</Link><Link to="/">Inicio</Link></nav></header>
     {error && <p className="workspace-error" role="alert" aria-live="assertive">{error}</p>}
     <section className="workspace-panel" aria-labelledby="active-project-label"><label id="active-project-label" htmlFor="quality-project">Proyecto activo</label><select id="quality-project" value={projectId} onChange={(event) => setProjectId(event.target.value)}>{projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></section>
 
