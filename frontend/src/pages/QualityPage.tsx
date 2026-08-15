@@ -19,7 +19,6 @@ export default function QualityPage() {
 
   useEffect(() => { void loadProjects() }, [])
   useEffect(() => { if (projectId) void loadQuality(projectId); else setDashboard(null) }, [projectId])
-  if (!authService.hasToken()) return <Navigate to="/auth" replace state={{ from: location.pathname }} />
 
   async function loadProjects() {
     try {
@@ -110,6 +109,8 @@ export default function QualityPage() {
   const donutBackground = activeRisks === 0
     ? 'conic-gradient(#243447 0 100%)'
     : `conic-gradient(#ef4444 0 ${(riskSegments.critical / riskSegments.denominator) * 100}%,#f97316 0 ${((riskSegments.critical + riskSegments.high) / riskSegments.denominator) * 100}%,#facc15 0 ${((riskSegments.critical + riskSegments.high + riskSegments.medium) / riskSegments.denominator) * 100}%,#34d399 0)`
+
+  if (!authService.hasToken()) return <Navigate to="/auth" replace state={{ from: location.pathname }} />
 
   return <main className="quality-app" aria-labelledby="quality-title">
     <aside className="quality-sidebar" aria-label="Menú de gestión de calidad">
