@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { authService } from '../services/auth'
 import { LearningTopic, PortfolioDashboard, PortfolioTrend, ProjectInsight, SimulationResult, SimulationScenario, SimulationSummary, studioService } from '../services/studio'
 import './studio.css'
 
 export default function StudioPage() {
+  const location = useLocation()
   const [dashboard, setDashboard] = useState<PortfolioDashboard | null>(null)
   const [projects, setProjects] = useState<ProjectInsight[]>([])
   const [trends, setTrends] = useState<PortfolioTrend[]>([])
@@ -19,13 +20,13 @@ export default function StudioPage() {
       .then(([dashboardData, projectData, trendData, scenarioData, topicData, summaryData]) => { setDashboard(dashboardData); setProjects(projectData); setTrends(trendData); setScenarios(scenarioData); setTopics(topicData); setSummary(summaryData) })
       .catch(() => setError('No fue posible cargar Studio Insights.'))
   }, [])
-  if (!authService.hasToken()) return <Navigate to="/auth" replace />
+  if (!authService.hasToken()) return <Navigate to="/auth" replace state={{ from: location.pathname }} />
 
   async function evaluate(scenarioId: string, optionId: string) { try { setResult(await studioService.evaluate(scenarioId, optionId)); setSummary(await studioService.simulationSummary()) } catch { setError('No fue posible evaluar la decisión.') } }
   async function download(format: 'pdf' | 'excel') { try { if (format === 'pdf') await studioService.downloadPdf(); else await studioService.downloadExcel() } catch { setError('No fue posible generar el reporte solicitado.') } }
 
   return <main className="studio-shell" aria-labelledby="studio-title">
-    <header className="studio-header"><div><p className="eyebrow">Fase 5 · Simulación, reportes y aprendizaje</p><h1 id="studio-title">Studio Insights</h1><p>Convierte los datos del portafolio en métricas, decisiones, reportes y aprendizaje aplicado.</p></div><nav aria-label="Navegación de Studio Insights"><Link to="/projects">Proyectos</Link><Link to="/quality">Calidad</Link><Link to="/">Inicio</Link></nav></header>
+    <header className="studio-header"><div><p className="eyebrow">Fase 5 · Simulación, reportes y aprendizaje</p><h1 id="studio-title">Studio Insights</h1><p>Convierte los datos del portafolio en métricas, decisiones, reportes y aprendizaje aplicado.</p></div><nav aria-label="Navegación de Studio Insights"><Link to="/projects">Proyectos</Link><Link to="/quality">Quality Center</Link><Link to="/studio">Studio Insights</Link><Link to="/account">Mi cuenta</Link><Link to="/">Inicio</Link></nav></header>
     {error && <p className="studio-error" role="alert" aria-live="assertive">{error}</p>}
 
     <section className="studio-section" aria-labelledby="portfolio-title"><div className="section-heading"><p>Portafolio</p><h2 id="portfolio-title">Dashboard conectado a datos reales</h2></div>{dashboard && <div className="metric-grid" aria-label="Métricas globales"><article><strong>{dashboard.totalProjects}</strong><span>Proyectos</span></article><article><strong>{dashboard.activeProjects}</strong><span>Activos</span></article><article><strong>{dashboard.totalRequirements}</strong><span>Requisitos</span></article><article><strong>{dashboard.requirementCoveragePercent}%</strong><span>Cobertura</span></article><article><strong>{dashboard.testPassRatePercent}%</strong><span>Pruebas aprobadas</span></article><article><strong>{dashboard.openDefects}</strong><span>Defectos abiertos</span></article><article><strong>{dashboard.openRisks}</strong><span>Riesgos abiertos</span></article></div>}<div className="scenario-options" aria-label="Exportar reportes"><button type="button" onClick={() => void download('pdf')}>Descargar reporte PDF</button><button type="button" onClick={() => void download('excel')}>Exportar Excel</button></div></section>
