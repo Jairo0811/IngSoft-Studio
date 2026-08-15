@@ -8,6 +8,7 @@ import PasswordRecoveryPage from './pages/PasswordRecoveryPage'
 import ProjectsPage from './pages/ProjectsPage'
 import QualityPage from './pages/QualityPage'
 import StudioPage from './pages/StudioPage'
+import { authService } from './services/auth'
 
 const lifecycle = [
   { icon: FolderKanban, title: 'Requisitos', description: 'Define y gestiona requisitos funcionales y no funcionales.' },
@@ -19,6 +20,8 @@ const lifecycle = [
 ]
 
 function LandingPage() {
+  const isAuthenticated = authService.hasToken()
+
   return (
     <main className="app-shell" aria-labelledby="home-title">
       <section className="hero">
@@ -31,7 +34,7 @@ function LandingPage() {
             <Link className="primary-link" to="/projects">Abrir Studio</Link>
             <Link className="secondary-link" to="/quality">Quality Center</Link>
             <Link className="secondary-link" to="/studio">Studio Insights</Link>
-            <Link className="secondary-link" to="/auth">Acceder</Link>
+            <Link className="secondary-link" to={isAuthenticated ? '/account' : '/auth'}>{isAuthenticated ? 'Mi cuenta' : 'Acceder'}</Link>
           </nav>
         </div>
       </section>
