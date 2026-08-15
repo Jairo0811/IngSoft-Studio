@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, BarChart3, Beaker, Bug, Download, FileText, Gauge, LifeBuoy, Settings, ShieldCheck, SlidersHorizontal } from 'lucide-react'
+import { AlertTriangle, BarChart3, Beaker, Bug, Gauge, ShieldCheck } from 'lucide-react'
 import { Navigate, useLocation } from 'react-router-dom'
 import BrandLogo from '../components/BrandLogo'
 import WorkspaceNav from '../components/WorkspaceNav'
@@ -33,7 +33,6 @@ export default function QualityPage() {
   const coverage = metrics?.requirementCoveragePercent ?? 0
   const highRiskCount = dashboard?.risks.filter((item) => ['High', 'Alta', 'Critical', 'Crítica'].includes(item.impact)).length ?? 0
   const mediumRiskCount = dashboard?.risks.filter((item) => ['Medium', 'Media'].includes(item.impact)).length ?? 0
-  const lowRiskCount = Math.max(activeRisks - highRiskCount - mediumRiskCount, 0)
   const riskSegments = useMemo(() => {
     const total = Math.max(activeRisks, 1)
     const critical = Math.min(metrics?.highRisks ?? 0, total)
@@ -45,15 +44,16 @@ export default function QualityPage() {
 
   return <main className="quality-app" aria-labelledby="quality-title">
     <aside className="quality-sidebar" aria-label="Menú de gestión de calidad">
-      <BrandLogo />
+      <BrandLogo compact />
       <p className="quality-menu-label">Gestión de calidad</p>
       <nav className="quality-side-nav">
-        <a href="#quality-summary" className="active"><Gauge />Resumen</a><a href="#quality-risks"><AlertTriangle />Riesgos</a><a href="#quality-tests"><Beaker />Casos de prueba</a><a href="#quality-defects"><Bug />Defectos</a><a href="#quality-metrics"><BarChart3 />Métricas</a><a href="#quality-coverage"><ShieldCheck />Cobertura</a>
+        <a href="#quality-summary" className="active"><Gauge />Resumen</a>
+        <a href="#quality-risks"><AlertTriangle />Riesgos</a>
+        <a href="#quality-tests"><Beaker />Casos de prueba</a>
+        <a href="#quality-defects"><Bug />Defectos</a>
+        <a href="#quality-metrics"><BarChart3 />Métricas</a>
+        <a href="#quality-coverage"><ShieldCheck />Cobertura</a>
       </nav>
-      <div className="quality-side-divider" />
-      <p className="quality-menu-label">Administración</p>
-      <nav className="quality-side-nav"><a href="#quality-settings"><Settings />Configuración</a><a href="#quality-templates"><FileText />Plantillas</a><a href="#quality-parameters"><SlidersHorizontal />Parámetros</a><a href="#quality-export"><Download />Exportar datos</a></nav>
-      <div className="quality-help"><LifeBuoy /><div><strong>¿Necesitas ayuda?</strong><p>Consulta la documentación o contacta al soporte.</p><button type="button">Centro de ayuda</button></div></div>
       <footer>© 2026 IngSoft Studio<br /><small>v1.1.0</small></footer>
     </aside>
 
