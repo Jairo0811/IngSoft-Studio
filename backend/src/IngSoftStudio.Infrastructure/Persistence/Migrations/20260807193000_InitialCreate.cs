@@ -1,9 +1,12 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace IngSoftStudio.Infrastructure.Persistence.Migrations;
 
+[DbContext(typeof(IngSoftStudioDbContext))]
+[Migration("20260807193000_InitialCreate")]
 public partial class InitialCreate : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
