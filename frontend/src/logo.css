@@ -7,6 +7,7 @@
 .auth-card__logo .brand-logo__image{width:96px;border-radius:14px}
 .quality-sidebar>.brand-logo{padding:.1rem .25rem 1.15rem}
 .quality-sidebar>.brand-logo .brand-logo__image{width:160px}
+.quality-sidebar footer{margin-top:auto}
 
-@media(max-width:900px){.quality-sidebar>.brand-logo{justify-content:center}.quality-sidebar>.brand-logo .brand-logo__image{width:140px}}
+@media(max-width:900px){.quality-sidebar>.brand-logo{justify-content:center}.quality-sidebar>.brand-logo .brand-logo__image{width:140px}.quality-sidebar footer{margin-top:1rem}}
 @media(max-width:640px){.brand-logo__image{width:min(260px,100%)}.home-brand-card .brand-logo__image,.auth-showcase .brand-logo__image{width:min(270px,100%)}}
