@@ -1,9 +1,10 @@
 import { FormEvent, useEffect, useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { authService, type User } from '../services/auth'
 
 export default function AccountPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [user, setUser] = useState<User | null>(null)
   const [fullName, setFullName] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
@@ -19,12 +20,12 @@ export default function AccountPage() {
       })
       .catch(() => {
         authService.logout()
-        navigate('/auth', { replace: true })
+        navigate('/auth', { replace: true, state: { from: location.pathname } })
       })
-  }, [navigate])
+  }, [location.pathname, navigate])
 
   if (!authService.hasToken()) {
-    return <Navigate to="/auth" replace />
+    return <Navigate to="/auth" replace state={{ from: location.pathname }} />
   }
 
   async function handleProfile(event: FormEvent<HTMLFormElement>) {
@@ -61,6 +62,13 @@ export default function AccountPage() {
 
   return (
     <main className="account-shell">
+      <nav className="actions" aria-label="Navegación de la cuenta">
+        <Link className="secondary-link" to="/projects">Proyectos</Link>
+        <Link className="secondary-link" to="/quality">Quality Center</Link>
+        <Link className="secondary-link" to="/studio">Studio Insights</Link>
+        <Link className="secondary-link" to="/">Inicio</Link>
+      </nav>
+
       <section className="account-header">
         <div>
           <p className="eyebrow">Cuenta</p>

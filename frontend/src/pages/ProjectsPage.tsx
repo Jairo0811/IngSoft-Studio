@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, useLocation } from 'react-router-dom'
 import { authService } from '../services/auth'
 import { Project, projectsService, Requirement, RequirementInput } from '../services/projects'
 import './projects.css'
@@ -7,6 +7,7 @@ import './projects.css'
 const emptyRequirement: RequirementInput = { title: '', description: '', type: 'Functional', priority: 'Must', acceptanceCriteria: '', source: '' }
 
 export default function ProjectsPage() {
+  const location = useLocation()
   const [projects, setProjects] = useState<Project[]>([])
   const [selectedProjectId, setSelectedProjectId] = useState('')
   const [requirements, setRequirements] = useState<Requirement[]>([])
@@ -19,7 +20,7 @@ export default function ProjectsPage() {
 
   useEffect(() => { void loadProjects() }, [])
   useEffect(() => { if (selectedProjectId) void loadRequirements(selectedProjectId); else setRequirements([]) }, [selectedProjectId])
-  if (!authService.hasToken()) return <Navigate to="/auth" replace />
+  if (!authService.hasToken()) return <Navigate to="/auth" replace state={{ from: location.pathname }} />
 
   async function loadProjects() { try { setLoading(true); const data = await projectsService.list(); setProjects(data); setSelectedProjectId((current) => current || data[0]?.id || '') } catch { setError('No fue posible cargar los proyectos.') } finally { setLoading(false) } }
   async function loadRequirements(projectId: string) { try { setRequirements(await projectsService.requirements(projectId)) } catch { setError('No fue posible cargar los requisitos del proyecto.') } }
@@ -29,7 +30,7 @@ export default function ProjectsPage() {
   async function deleteRequirement(item: Requirement) { if (!window.confirm(`¿Eliminar el requisito “${item.title}”? Esta acción modifica datos del proyecto.`)) return; await projectsService.removeRequirement(item.projectId, item.id); setRequirements((current) => current.filter((value) => value.id !== item.id)) }
 
   return <main className="workspace-shell" aria-labelledby="projects-title">
-    <header className="workspace-header"><div><p className="eyebrow">Fase 3 · Ingeniería de Requisitos</p><h1 id="projects-title">Proyectos y requisitos</h1><p>Gestiona el alcance funcional, historias de usuario, casos de uso y prioridades MoSCoW.</p></div><nav aria-label="Navegación del workspace"><Link to="/account">Mi cuenta</Link><Link to="/">Inicio</Link></nav></header>
+    <header className="workspace-header"><div><p className="eyebrow">Fase 3 · Ingeniería de Requisitos</p><h1 id="projects-title">Proyectos y requisitos</h1><p>Gestiona el alcance funcional, historias de usuario, casos de uso y prioridades MoSCoW.</p></div><nav aria-label="Navegación del workspace"><Link to="/projects">Proyectos</Link><Link to="/quality">Quality Center</Link><Link to="/studio">Studio Insights</Link><Link to="/account">Mi cuenta</Link><Link to="/">Inicio</Link></nav></header>
     {error && <p className="workspace-error" role="alert" aria-live="assertive">{error}</p>}
     <section className="workspace-grid">
       <aside className="workspace-panel projects-panel" aria-labelledby="project-list-title">
