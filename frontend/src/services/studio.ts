@@ -30,8 +30,8 @@ async function downloadReport(path: string, fallbackName: string) {
   if (!response.ok) throw new Error('No fue posible generar el reporte.')
   const blob = await response.blob()
   const disposition = response.headers.get('content-disposition') ?? ''
-  const match = disposition.match(/filename\*?=(?:UTF-8''|\")?([^\";]+)/i)
-  const fileName = match ? decodeURIComponent(match[1].replace(/\"/g, '')) : fallbackName
+  const match = disposition.match(/filename\*?=(?:UTF-8''|")?([^";]+)/i)
+  const fileName = match ? decodeURIComponent(match[1].replace(/"/g, '')) : fallbackName
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
   anchor.href = url

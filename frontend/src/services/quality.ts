@@ -33,7 +33,9 @@ export type QualityDashboard = { metrics: QualityMetrics; traceability: Traceabi
 export const qualityService = {
   dashboard: (projectId: string) => apiRequest<QualityDashboard>(`/api/v1/projects/${projectId}/quality`),
   createRisk: (projectId: string, input: object) => apiRequest<Risk>(`/api/v1/projects/${projectId}/quality/risks`, { method: 'POST', body: JSON.stringify(input) }),
+  changeRiskStatus: (projectId: string, id: string, status: number) => apiRequest<Risk>(`/api/v1/projects/${projectId}/quality/risks/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
   createTest: (projectId: string, input: object) => apiRequest<TestCase>(`/api/v1/projects/${projectId}/quality/tests`, { method: 'POST', body: JSON.stringify(input) }),
   executeTest: (projectId: string, id: string, status: number, actualResult: string) => apiRequest<TestCase>(`/api/v1/projects/${projectId}/quality/tests/${id}/execute`, { method: 'PATCH', body: JSON.stringify({ status, actualResult }) }),
   createDefect: (projectId: string, input: object) => apiRequest<Defect>(`/api/v1/projects/${projectId}/quality/defects`, { method: 'POST', body: JSON.stringify(input) }),
+  changeDefectStatus: (projectId: string, id: string, status: number) => apiRequest<Defect>(`/api/v1/projects/${projectId}/quality/defects/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
 }
