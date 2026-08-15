@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { AlertTriangle, BarChart3, Beaker, Bug, Download, FileText, Gauge, LifeBuoy, Settings, ShieldCheck, SlidersHorizontal } from 'lucide-react'
 import { Navigate, useLocation } from 'react-router-dom'
+import BrandLogo from '../components/BrandLogo'
 import WorkspaceNav from '../components/WorkspaceNav'
 import { authService } from '../services/auth'
 import { Project, projectsService, Requirement } from '../services/projects'
@@ -44,7 +45,7 @@ export default function QualityPage() {
 
   return <main className="quality-app" aria-labelledby="quality-title">
     <aside className="quality-sidebar" aria-label="Menú de gestión de calidad">
-      <div className="quality-brand"><div className="quality-brand-mark">&lt;IS&gt;</div><div><strong>Ing<span>Soft</span></strong><small>STUDIO</small></div></div>
+      <BrandLogo />
       <p className="quality-menu-label">Gestión de calidad</p>
       <nav className="quality-side-nav">
         <a href="#quality-summary" className="active"><Gauge />Resumen</a><a href="#quality-risks"><AlertTriangle />Riesgos</a><a href="#quality-tests"><Beaker />Casos de prueba</a><a href="#quality-defects"><Bug />Defectos</a><a href="#quality-metrics"><BarChart3 />Métricas</a><a href="#quality-coverage"><ShieldCheck />Cobertura</a>
