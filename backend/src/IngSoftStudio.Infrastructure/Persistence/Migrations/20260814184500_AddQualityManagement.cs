@@ -1,9 +1,12 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace IngSoftStudio.Infrastructure.Persistence.Migrations;
 
+[DbContext(typeof(IngSoftStudioDbContext))]
+[Migration("20260814184500_AddQualityManagement")]
 #pragma warning disable CA1861 // EF Core generated-style migration metadata uses inline column arrays.
 public partial class AddQualityManagement : Migration
 {

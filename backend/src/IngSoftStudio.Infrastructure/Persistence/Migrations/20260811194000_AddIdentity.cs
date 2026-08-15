@@ -1,9 +1,12 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace IngSoftStudio.Infrastructure.Persistence.Migrations;
 
+[DbContext(typeof(IngSoftStudioDbContext))]
+[Migration("20260811194000_AddIdentity")]
 public partial class AddIdentity : Migration
 {
     protected override void Up(MigrationBuilder migrationBuilder)
