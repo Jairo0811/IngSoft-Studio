@@ -3,11 +3,11 @@ import { NavLink } from 'react-router-dom'
 import './workspace-nav.css'
 
 const items = [
+  { to: '/', label: 'Inicio', icon: Home },
   { to: '/projects', label: 'Proyectos', icon: FolderKanban },
   { to: '/quality', label: 'Quality Center', icon: ShieldCheck },
   { to: '/studio', label: 'Studio Insights', icon: BarChart3 },
   { to: '/account', label: 'Mi cuenta', icon: UserCircle },
-  { to: '/', label: 'Inicio', icon: Home },
 ]
 
 export default function WorkspaceNav() {
