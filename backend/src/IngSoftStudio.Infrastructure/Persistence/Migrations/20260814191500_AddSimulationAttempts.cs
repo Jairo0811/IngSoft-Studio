@@ -1,9 +1,12 @@
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace IngSoftStudio.Infrastructure.Persistence.Migrations;
 
+[DbContext(typeof(IngSoftStudioDbContext))]
+[Migration("20260814191500_AddSimulationAttempts")]
 #pragma warning disable CA1861
 public partial class AddSimulationAttempts : Migration
 {
