@@ -45,7 +45,7 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
     const { message, details } = await parseError(response)
     if (response.status === 401 && token) {
       localStorage.removeItem(TOKEN_KEY)
-      window.dispatchEvent(new CustomEvent('ingsoftstudio:session-expired'))
+      if (window.location.pathname !== '/auth') window.location.assign('/auth?expired=1')
     }
     throw new ApiError(response.status, message, details)
   }
