@@ -1,18 +1,22 @@
 import { FormEvent, useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { authService } from '../services/auth'
+
+type AuthLocationState = { from?: string }
 
 export default function AuthPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const destination = (location.state as AuthLocationState | null)?.from || '/projects'
 
   if (authService.hasToken()) {
-    return <Navigate to="/account" replace />
+    return <Navigate to={destination} replace />
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -26,7 +30,7 @@ export default function AuthPage() {
       } else {
         await authService.login(email, password)
       }
-      navigate('/account')
+      navigate(destination, { replace: true })
     } catch {
       setError('No fue posible completar la autenticación. Verifica los datos e inténtalo nuevamente.')
     } finally {
