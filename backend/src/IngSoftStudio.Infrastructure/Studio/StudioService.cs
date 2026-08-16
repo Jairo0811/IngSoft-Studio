@@ -14,6 +14,16 @@ namespace IngSoftStudio.Infrastructure.Studio;
 
 public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioService
 {
+    private static readonly string[] PdfSummaryHeaders =
+    [
+        "Proyectos", "Activos", "Requisitos", "Pruebas", "Cobertura", "Pass rate", "Pendientes"
+    ];
+
+    private static readonly string[] PdfProjectHeaders =
+    [
+        "Proyecto", "Estado", "Req.", "Tests", "Cobertura", "Def. abiertos", "Riesgos abiertos"
+    ];
+
     private static readonly IReadOnlyCollection<SimulationScenario> Scenarios =
     [
         new("requirements-change", "Cambio crítico de alcance", "El cliente solicita una funcionalidad importante cuando el sprint está a mitad y el equipo ya comprometió su capacidad.", "¿Cuál es la decisión más profesional?", [new("accept-now", "Aceptarla inmediatamente sin análisis", 20, "Aumenta el riesgo de alcance, calidad y previsibilidad."), new("assess-change", "Analizar impacto, costo, prioridad y negociar el cambio", 100, "Aplica control de cambios y protege alcance, plazo y calidad."), new("reject", "Rechazarla automáticamente", 40, "Evita el cambio, pero ignora el valor de negocio y la gestión de stakeholders.")]),
@@ -117,8 +127,8 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
                 column.Item().Text("Consolidado de proyectos, requisitos, cobertura, ejecución de pruebas y elementos de calidad pendientes. Los indicadores utilizan la misma semántica que Studio Insights: los defectos resueltos y los riesgos aceptados no se contabilizan como abiertos.");
                 column.Item().Table(table =>
                 {
-                    table.ColumnsDefinition(columns => { for (var i = 0; i < 7; i++) columns.RelativeColumn(); });
-                    table.Header(header => { foreach (var title in new[] { "Proyectos", "Activos", "Requisitos", "Pruebas", "Cobertura", "Pass rate", "Pendientes" }) header.Cell().Padding(4).Text(title).Bold(); });
+                    table.ColumnsDefinition(columns => { for (var i = 0; i < PdfSummaryHeaders.Length; i++) columns.RelativeColumn(); });
+                    table.Header(header => { foreach (var title in PdfSummaryHeaders) header.Cell().Padding(4).Text(title).Bold(); });
                     table.Cell().Padding(4).Text(dashboard.TotalProjects.ToString(CultureInfo.InvariantCulture));
                     table.Cell().Padding(4).Text(dashboard.ActiveProjects.ToString(CultureInfo.InvariantCulture));
                     table.Cell().Padding(4).Text(dashboard.TotalRequirements.ToString(CultureInfo.InvariantCulture));
@@ -133,8 +143,8 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
                 column.Item().Text("Detalle por proyecto").FontSize(16).Bold();
                 column.Item().Table(table =>
                 {
-                    table.ColumnsDefinition(columns => { columns.RelativeColumn(3); columns.RelativeColumn(); columns.RelativeColumn(); columns.RelativeColumn(); columns.RelativeColumn(); columns.RelativeColumn(); columns.RelativeColumn(); });
-                    table.Header(header => { foreach (var title in new[] { "Proyecto", "Estado", "Req.", "Tests", "Cobertura", "Def. abiertos", "Riesgos abiertos" }) header.Cell().Padding(3).Text(title).Bold(); });
+                    table.ColumnsDefinition(columns => { columns.RelativeColumn(3); for (var i = 1; i < PdfProjectHeaders.Length; i++) columns.RelativeColumn(); });
+                    table.Header(header => { foreach (var title in PdfProjectHeaders) header.Cell().Padding(3).Text(title).Bold(); });
                     foreach (var project in projects)
                     {
                         table.Cell().Padding(3).Text(project.ProjectName); table.Cell().Padding(3).Text(project.Status); table.Cell().Padding(3).Text(project.Requirements.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text(project.Tests.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text($"{project.CoveragePercent}%"); table.Cell().Padding(3).Text(project.OpenDefects.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text(project.OpenRisks.ToString(CultureInfo.InvariantCulture));
