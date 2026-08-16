@@ -14,6 +14,16 @@ namespace IngSoftStudio.Infrastructure.Studio;
 
 public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioService
 {
+    private static readonly string[] PdfSummaryHeaders =
+    [
+        "Proyectos", "Activos", "Requisitos", "Pruebas", "Cobertura", "Pass rate", "Pendientes"
+    ];
+
+    private static readonly string[] PdfProjectHeaders =
+    [
+        "Proyecto", "Estado", "Req.", "Tests", "Cobertura", "Def. abiertos", "Riesgos abiertos"
+    ];
+
     private static readonly IReadOnlyCollection<SimulationScenario> Scenarios =
     [
         new("requirements-change", "Cambio crítico de alcance", "El cliente solicita una funcionalidad importante cuando el sprint está a mitad y el equipo ya comprometió su capacidad.", "¿Cuál es la decisión más profesional?", [new("accept-now", "Aceptarla inmediatamente sin análisis", 20, "Aumenta el riesgo de alcance, calidad y previsibilidad."), new("assess-change", "Analizar impacto, costo, prioridad y negociar el cambio", 100, "Aplica control de cambios y protege alcance, plazo y calidad."), new("reject", "Rechazarla automáticamente", 40, "Evita el cambio, pero ignora el valor de negocio y la gestión de stakeholders.")]),
@@ -26,8 +36,10 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
     private static readonly IReadOnlyCollection<LearningTopic> Topics =
     [
         new("requirements", "Ingeniería de requisitos", "Análisis", "Proceso para descubrir, documentar, validar y gestionar necesidades del sistema.", ["Diferenciar requisitos funcionales y no funcionales", "Definir criterios de aceptación", "Mantener trazabilidad y control de cambios"]),
+        new("user-stories", "Historias de usuario", "Análisis", "Describen una necesidad desde la perspectiva del usuario y conectan valor de negocio con requisitos verificables.", ["Como [rol], quiero [objetivo], para [beneficio]", "Definir criterios de aceptación claros", "Refinar con usuarios y stakeholders"]),
         new("solid", "Principios SOLID", "Diseño", "Cinco principios para construir software modular, extensible y mantenible.", ["Responsabilidad única", "Abierto/cerrado", "Sustitución de Liskov", "Segregación de interfaces", "Inversión de dependencias"]),
         new("testing", "Estrategia de pruebas", "Calidad", "Una estrategia equilibrada combina pruebas unitarias, integración y validación de flujos críticos.", ["Probar reglas de dominio", "Validar integraciones reales", "Automatizar regresión en CI"]),
+        new("black-white-box", "Caja blanca y caja negra", "Calidad", "Dos enfoques complementarios permiten validar el comportamiento observable y la lógica interna del software.", ["Caja negra: entradas, salidas y requisitos", "Caja blanca: lógica, caminos, condiciones y cobertura", "Combinar ambas técnicas mejora la detección de defectos"]),
         new("risk", "Gestión de riesgos", "Gestión", "Identificar incertidumbres antes de que se conviertan en problemas permite priorizar mitigaciones.", ["Probabilidad × impacto", "Mitigación", "Seguimiento continuo"]),
         new("traceability", "Trazabilidad", "Calidad", "Relaciona requisitos, pruebas y defectos para evidenciar cobertura y cambios.", ["Requirement → Test Case", "Test Case → Defect", "Cobertura medible"]),
         new("change-control", "Control de cambios", "Gestión", "Los cambios deben evaluarse por valor, costo, riesgo e impacto antes de incorporarse.", ["Analizar impacto", "Negociar prioridad", "Registrar la decisión"]),
@@ -41,8 +53,8 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         var coveredRequirements = await dbContext.TestCases.Where(x => x.RequirementId != null).Select(x => x.RequirementId).Distinct().CountAsync(cancellationToken);
         var totalTests = await dbContext.TestCases.CountAsync(cancellationToken);
         var passedTests = await dbContext.TestCases.CountAsync(x => x.Status == TestCaseStatus.Passed, cancellationToken);
-        var openDefects = await dbContext.Defects.CountAsync(x => x.Status != DefectStatus.Closed, cancellationToken);
-        var openRisks = await dbContext.Risks.CountAsync(x => x.Status != RiskStatus.Closed, cancellationToken);
+        var openDefects = await dbContext.Defects.CountAsync(x => x.Status != DefectStatus.Closed && x.Status != DefectStatus.Resolved, cancellationToken);
+        var openRisks = await dbContext.Risks.CountAsync(x => x.Status != RiskStatus.Closed && x.Status != RiskStatus.Accepted, cancellationToken);
         return new PortfolioDashboard(projects?.Total ?? 0, projects?.Draft ?? 0, projects?.Active ?? 0, projects?.Completed ?? 0, projects?.Archived ?? 0, totalRequirements, totalTests, passedTests, openDefects, openRisks, Percent(passedTests, totalTests), Percent(coveredRequirements, totalRequirements));
     }
 
@@ -56,8 +68,8 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
             var covered = await dbContext.TestCases.Where(x => x.ProjectId == project.Id && x.RequirementId != null).Select(x => x.RequirementId).Distinct().CountAsync(cancellationToken);
             var tests = await dbContext.TestCases.CountAsync(x => x.ProjectId == project.Id, cancellationToken);
             var passed = await dbContext.TestCases.CountAsync(x => x.ProjectId == project.Id && x.Status == TestCaseStatus.Passed, cancellationToken);
-            var defects = await dbContext.Defects.CountAsync(x => x.ProjectId == project.Id && x.Status != DefectStatus.Closed, cancellationToken);
-            var risks = await dbContext.Risks.CountAsync(x => x.ProjectId == project.Id && x.Status != RiskStatus.Closed, cancellationToken);
+            var defects = await dbContext.Defects.CountAsync(x => x.ProjectId == project.Id && x.Status != DefectStatus.Closed && x.Status != DefectStatus.Resolved, cancellationToken);
+            var risks = await dbContext.Risks.CountAsync(x => x.ProjectId == project.Id && x.Status != RiskStatus.Closed && x.Status != RiskStatus.Accepted, cancellationToken);
             result.Add(new ProjectInsight(project.Id, project.Name, project.Status.ToString(), requirements, tests, passed, defects, risks, Percent(covered, requirements), Percent(passed, tests)));
         }
         return result;
@@ -95,33 +107,55 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
     {
         var dashboard = await GetDashboardAsync(cancellationToken);
         var projects = await GetProjectInsightsAsync(cancellationToken);
+        var generatedAt = DateTime.UtcNow;
+        var releaseAssessment = BuildReleaseAssessment(dashboard);
+
         QuestPDF.Settings.License = LicenseType.Community;
         var bytes = Document.Create(container => container.Page(page =>
         {
             page.Margin(32);
-            page.Header().Column(column => { column.Item().Text("IngSoft Studio — Reporte Ejecutivo").FontSize(22).Bold(); column.Item().Text($"Generado UTC: {DateTime.UtcNow:yyyy-MM-dd HH:mm}").FontSize(9); });
+            page.Header().Column(column =>
+            {
+                column.Item().Text("IngSoft Studio").FontSize(11).Bold().FontColor(Colors.Teal.Medium);
+                column.Item().Text("Reporte Ejecutivo de Calidad y Portafolio").FontSize(22).Bold();
+                column.Item().Text($"Generado UTC: {generatedAt:yyyy-MM-dd HH:mm}").FontSize(9).FontColor(Colors.Grey.Medium);
+            });
             page.Content().PaddingVertical(16).Column(column =>
             {
-                column.Spacing(12);
-                column.Item().Text("Resumen de portafolio").FontSize(16).Bold();
-                column.Item().Text($"Proyectos: {dashboard.TotalProjects} | Activos: {dashboard.ActiveProjects} | Requisitos: {dashboard.TotalRequirements} | Pruebas: {dashboard.TotalTests} | Cobertura: {dashboard.RequirementCoveragePercent}% | Pass rate: {dashboard.TestPassRatePercent}%");
+                column.Spacing(14);
+                column.Item().Text("Resumen ejecutivo").FontSize(16).Bold();
+                column.Item().Text("Consolidado de proyectos, requisitos, cobertura, ejecución de pruebas y elementos de calidad pendientes. Los indicadores utilizan la misma semántica que Studio Insights: los defectos resueltos y los riesgos aceptados no se contabilizan como abiertos.");
                 column.Item().Table(table =>
                 {
-                    table.ColumnsDefinition(columns => { columns.RelativeColumn(3); columns.RelativeColumn(); columns.RelativeColumn(); columns.RelativeColumn(); columns.RelativeColumn(); });
-                    table.Header(header => { header.Cell().Text("Proyecto").Bold(); header.Cell().Text("Req.").Bold(); header.Cell().Text("Tests").Bold(); header.Cell().Text("Defectos").Bold(); header.Cell().Text("Riesgos").Bold(); });
+                    table.ColumnsDefinition(columns => { for (var i = 0; i < PdfSummaryHeaders.Length; i++) columns.RelativeColumn(); });
+                    table.Header(header => { foreach (var title in PdfSummaryHeaders) header.Cell().Padding(4).Text(title).Bold(); });
+                    table.Cell().Padding(4).Text(dashboard.TotalProjects.ToString(CultureInfo.InvariantCulture));
+                    table.Cell().Padding(4).Text(dashboard.ActiveProjects.ToString(CultureInfo.InvariantCulture));
+                    table.Cell().Padding(4).Text(dashboard.TotalRequirements.ToString(CultureInfo.InvariantCulture));
+                    table.Cell().Padding(4).Text(dashboard.TotalTests.ToString(CultureInfo.InvariantCulture));
+                    table.Cell().Padding(4).Text($"{dashboard.RequirementCoveragePercent}%");
+                    table.Cell().Padding(4).Text($"{dashboard.TestPassRatePercent}%");
+                    table.Cell().Padding(4).Text((dashboard.OpenDefects + dashboard.OpenRisks).ToString(CultureInfo.InvariantCulture));
+                });
+                column.Item().Text("Evaluación de liberación").FontSize(16).Bold();
+                column.Item().Text(releaseAssessment);
+                column.Item().Text($"Defectos abiertos: {dashboard.OpenDefects} · Riesgos abiertos: {dashboard.OpenRisks}");
+                column.Item().Text("Detalle por proyecto").FontSize(16).Bold();
+                column.Item().Table(table =>
+                {
+                    table.ColumnsDefinition(columns => { columns.RelativeColumn(3); for (var i = 1; i < PdfProjectHeaders.Length; i++) columns.RelativeColumn(); });
+                    table.Header(header => { foreach (var title in PdfProjectHeaders) header.Cell().Padding(3).Text(title).Bold(); });
                     foreach (var project in projects)
                     {
-                        table.Cell().Text(project.ProjectName);
-                        table.Cell().Text(project.Requirements.ToString(CultureInfo.InvariantCulture));
-                        table.Cell().Text(project.Tests.ToString(CultureInfo.InvariantCulture));
-                        table.Cell().Text(project.OpenDefects.ToString(CultureInfo.InvariantCulture));
-                        table.Cell().Text(project.OpenRisks.ToString(CultureInfo.InvariantCulture));
+                        table.Cell().Padding(3).Text(project.ProjectName); table.Cell().Padding(3).Text(project.Status); table.Cell().Padding(3).Text(project.Requirements.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text(project.Tests.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text($"{project.CoveragePercent}%"); table.Cell().Padding(3).Text(project.OpenDefects.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text(project.OpenRisks.ToString(CultureInfo.InvariantCulture));
                     }
                 });
+                column.Item().Text("Criterios de interpretación").FontSize(16).Bold();
+                column.Item().Text("• Cobertura: requisitos con al menos un caso de prueba asociado.\n• Pass rate: casos de prueba aprobados sobre el total registrado.\n• Defectos abiertos: estados operativos pendientes; Resolved y Closed quedan fuera.\n• Riesgos abiertos: riesgos todavía gestionables; Accepted y Closed quedan fuera.");
             });
             page.Footer().AlignCenter().Text("IngSoft Studio · Engineering Better Software").FontSize(9).FontColor(Colors.Grey.Medium);
         })).GeneratePdf();
-        return new ReportFile(bytes, "application/pdf", $"ingsoft-studio-report-{DateTime.UtcNow:yyyyMMdd}.pdf");
+        return new ReportFile(bytes, "application/pdf", $"ingsoft-studio-report-{generatedAt:yyyyMMdd}.pdf");
     }
 
     public async Task<ReportFile> BuildExcelReportAsync(CancellationToken cancellationToken)
@@ -130,14 +164,19 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         var projects = await GetProjectInsightsAsync(cancellationToken);
         using var workbook = new XLWorkbook();
         var summary = workbook.Worksheets.Add("Resumen");
-        summary.Cell("A1").Value = "IngSoft Studio — Reporte Ejecutivo";
-        summary.Cell("A3").Value = "Proyectos"; summary.Cell("B3").Value = dashboard.TotalProjects;
-        summary.Cell("A4").Value = "Requisitos"; summary.Cell("B4").Value = dashboard.TotalRequirements;
-        summary.Cell("A5").Value = "Pruebas"; summary.Cell("B5").Value = dashboard.TotalTests;
-        summary.Cell("A6").Value = "Cobertura %"; summary.Cell("B6").Value = dashboard.RequirementCoveragePercent;
-        summary.Cell("A7").Value = "Pass rate %"; summary.Cell("B7").Value = dashboard.TestPassRatePercent;
+        summary.Cell("A1").Value = "IngSoft Studio — Reporte Ejecutivo de Calidad y Portafolio";
+        summary.Range("A1:B1").Merge().Style.Font.SetBold().Font.SetFontSize(16);
+        summary.Cell("A2").Value = "Generado UTC"; summary.Cell("B2").Value = DateTime.UtcNow;
+        var summaryRows = new (string Label, string Value)[]
+        {
+            ("Proyectos", dashboard.TotalProjects.ToString(CultureInfo.InvariantCulture)), ("Proyectos activos", dashboard.ActiveProjects.ToString(CultureInfo.InvariantCulture)), ("Requisitos", dashboard.TotalRequirements.ToString(CultureInfo.InvariantCulture)),
+            ("Pruebas", dashboard.TotalTests.ToString(CultureInfo.InvariantCulture)), ("Pruebas aprobadas", dashboard.PassedTests.ToString(CultureInfo.InvariantCulture)), ("Cobertura %", dashboard.RequirementCoveragePercent.ToString(CultureInfo.InvariantCulture)),
+            ("Pass rate %", dashboard.TestPassRatePercent.ToString(CultureInfo.InvariantCulture)), ("Defectos abiertos", dashboard.OpenDefects.ToString(CultureInfo.InvariantCulture)), ("Riesgos abiertos", dashboard.OpenRisks.ToString(CultureInfo.InvariantCulture)),
+            ("Evaluación de liberación", BuildReleaseAssessment(dashboard))
+        };
+        for (var i = 0; i < summaryRows.Length; i++) { summary.Cell(i + 4, 1).Value = summaryRows[i].Label; summary.Cell(i + 4, 2).Value = summaryRows[i].Value; }
+        summary.Range(4, 1, summaryRows.Length + 3, 1).Style.Font.Bold = true;
         summary.Columns().AdjustToContents();
-
         var detail = workbook.Worksheets.Add("Proyectos");
         var headers = new[] { "Proyecto", "Estado", "Requisitos", "Pruebas", "Aprobadas", "Defectos abiertos", "Riesgos abiertos", "Cobertura %", "Pass rate %" };
         for (var i = 0; i < headers.Length; i++) detail.Cell(1, i + 1).Value = headers[i];
@@ -147,10 +186,28 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
             detail.Cell(row, 1).Value = project.ProjectName; detail.Cell(row, 2).Value = project.Status; detail.Cell(row, 3).Value = project.Requirements; detail.Cell(row, 4).Value = project.Tests; detail.Cell(row, 5).Value = project.PassedTests; detail.Cell(row, 6).Value = project.OpenDefects; detail.Cell(row, 7).Value = project.OpenRisks; detail.Cell(row, 8).Value = project.CoveragePercent; detail.Cell(row, 9).Value = project.PassRatePercent; row++;
         }
         detail.Range(1, 1, 1, headers.Length).Style.Font.Bold = true;
+        detail.SheetView.FreezeRows(1);
         detail.Columns().AdjustToContents();
+        var definitions = workbook.Worksheets.Add("Definiciones");
+        definitions.Cell("A1").Value = "Indicador"; definitions.Cell("B1").Value = "Definición";
+        definitions.Cell("A2").Value = "Cobertura"; definitions.Cell("B2").Value = "Requisitos con al menos un caso de prueba asociado.";
+        definitions.Cell("A3").Value = "Pass rate"; definitions.Cell("B3").Value = "Casos de prueba aprobados sobre el total registrado.";
+        definitions.Cell("A4").Value = "Defectos abiertos"; definitions.Cell("B4").Value = "Defectos pendientes de atención; Resolved y Closed no se contabilizan.";
+        definitions.Cell("A5").Value = "Riesgos abiertos"; definitions.Cell("B5").Value = "Riesgos pendientes de gestión; Accepted y Closed no se contabilizan.";
+        definitions.Range("A1:B1").Style.Font.Bold = true;
+        definitions.Columns().AdjustToContents();
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         return new ReportFile(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ingsoft-studio-report-{DateTime.UtcNow:yyyyMMdd}.xlsx");
+    }
+
+    private static string BuildReleaseAssessment(PortfolioDashboard dashboard)
+    {
+        if (dashboard.OpenDefects > 0) return "NO-GO: existen defectos abiertos que requieren evaluación antes de liberar.";
+        if (dashboard.OpenRisks > 0) return "REVISAR: no hay defectos abiertos, pero existen riesgos pendientes de gestión.";
+        if (dashboard.TotalRequirements > 0 && dashboard.RequirementCoveragePercent < 100) return "REVISAR: existen requisitos sin cobertura de pruebas completa.";
+        if (dashboard.TotalTests > 0 && dashboard.TestPassRatePercent < 100) return "REVISAR: no todos los casos de prueba registrados están aprobados.";
+        return dashboard.TotalTests == 0 ? "SIN EVIDENCIA: todavía no existen casos de prueba para sustentar una decisión de liberación." : "GO: no existen defectos ni riesgos abiertos y la evidencia de pruebas registrada cumple los criterios actuales.";
     }
 
     private static decimal Percent(int value, int total) => total == 0 ? 0 : decimal.Round((decimal)value / total * 100, 2);
