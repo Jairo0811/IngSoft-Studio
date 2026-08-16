@@ -45,7 +45,7 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 | 📐 Análisis y diseño | Casos de uso, arquitectura, componentes y decisiones técnicas |
 | 💻 Desarrollo | Planificación, estados y seguimiento del progreso |
 | 🧪 Pruebas | Casos de prueba, ejecuciones, defectos, métricas y cobertura |
-| 🚀 Despliegue | Reportes, liberaciones y criterios de release |
+| 🚀 Despliegue | Reportes ejecutivos, criterios de liberación y decisión Go/No-Go |
 | 🔄 Mantenimiento | Riesgos, incidencias, aprendizaje y mejora continua |
 
 ---
@@ -58,17 +58,91 @@ Desarrollar un entorno profesional que permita planificar, documentar, controlar
 - 📋 Ingeniería de requisitos
 - 🧭 Historias de usuario y casos de uso
 - ✅ Criterios de aceptación y fuente del requisito
-- ⚠️ Gestión de riesgos
-- 📐 Métricas de calidad y cobertura
-- 🧪 Casos de prueba, ejecuciones y defectos
+- ⚠️ Gestión de riesgos con probabilidad, impacto, score, estado y mitigación
+- 🧪 Casos de prueba, ejecución y estados terminales
+- 🐞 Gestión de defectos y severidad
 - 🔗 Matriz de trazabilidad Requirement → Test Case → Defect
-- 📄 Reportes PDF y Excel
+- 📐 Quality Center con cobertura, pass rate, defectos, riesgos y hallazgos consolidados
+- 📊 Distribución visual de riesgos por nivel
+- 📄 Reportes ejecutivos PDF y Excel
+- 🚦 Evaluación de liberación `GO`, `REVISAR`, `NO-GO` o `SIN EVIDENCIA`
+- 💯 Quality Score ejecutivo de 0 a 100
+- 🏷️ Branding corporativo en reportes con logo oficial de IngSoft Studio
+- 🕒 Reportes con zona horaria `America/Santo_Domingo`
+- 📅 Fechas de reporte en formato `dd-MM-yyyy HH:mm`
 - 🎮 Simulador de decisiones de Ingeniería de Software
-- 🎓 Centro de aprendizaje
+- 🎓 Centro de aprendizaje con Ingeniería de Requisitos, Historias de Usuario, SOLID, pruebas, caja blanca/caja negra, riesgos, trazabilidad, control de cambios y release
 - 📈 Indicadores y tendencias por proyecto
 - ♿ Accesibilidad basada en NORTIC B2:2017
 - 📱 Diseño responsive para escritorio, tableta y móvil
 - 🔐 Hardening de seguridad para API
+
+---
+
+## 🧪 Quality Center
+
+El **Quality Center** concentra la evidencia necesaria para evaluar el estado técnico de un proyecto y su preparación para liberación.
+
+Incluye:
+
+- métricas de requisitos y cobertura;
+- pass rate de casos de prueba;
+- defectos abiertos y resueltos;
+- riesgos abiertos, aceptados y cerrados;
+- clasificación de riesgos por exposición;
+- consolidación ordenada de hallazgos;
+- trazabilidad entre requisitos, pruebas y defectos;
+- criterios de liberación basados en evidencia.
+
+Los estados terminales se interpretan de forma consistente en las métricas: los defectos `Resolved`/`Closed` y los riesgos `Accepted`/`Closed` no se contabilizan como pendientes.
+
+---
+
+## 📄 Reportes ejecutivos
+
+IngSoft Studio genera reportes de calidad en **PDF** y **Excel**.
+
+### PDF
+
+El reporte PDF incluye:
+
+- logo corporativo de IngSoft Studio;
+- resumen ejecutivo;
+- KPIs de proyectos, requisitos, pruebas, cobertura, pass rate y pendientes;
+- decisión de liberación;
+- Quality Score;
+- evidencia de calidad;
+- detalle por proyecto;
+- criterios de interpretación;
+- numeración de páginas.
+
+La fecha se genera con la zona horaria de **Santo Domingo (`America/Santo_Domingo`)** y se presenta en formato:
+
+```text
+DD-MM-AAAA HH:mm
+```
+
+Ejemplo:
+
+```text
+16-08-2026 11:43
+```
+
+Los nombres de los archivos siguen el mismo formato:
+
+```text
+ingsoft-studio-report-16-08-2026.pdf
+ingsoft-studio-report-16-08-2026.xlsx
+```
+
+### Criterios de liberación
+
+| Estado | Interpretación |
+|---|---|
+| 🟢 `GO` | Evidencia suficiente, sin defectos ni riesgos pendientes y criterios actuales satisfechos |
+| 🟡 `REVISAR` | Existe cobertura incompleta, pruebas pendientes o riesgos abiertos |
+| 🔴 `NO-GO` | Existen defectos abiertos que requieren evaluación antes de liberar |
+| ⚪ `SIN EVIDENCIA` | No existen casos de prueba suficientes para sustentar una decisión |
 
 ---
 
@@ -226,7 +300,7 @@ Consulta el detalle técnico en [`docs/accessibility/NORTIC-B2-2017.md`](./docs/
 - Problem Details y manejo centralizado de excepciones
 - Logging estructurado con Serilog
 - Endpoint de health check
-- Secretos mediante configuración/variables de entorno
+- Secretos mediante configuración/variables de entorno o .NET User Secrets en desarrollo
 
 Consulta [`SECURITY.md`](./SECURITY.md).
 
@@ -265,7 +339,7 @@ Consulta [`SECURITY.md`](./SECURITY.md).
 
 ## 📦 Estado actual
 
-Las **6 fases están completadas**. IngSoft Studio dispone de una base full stack estable, autenticación, autorización, persistencia SQL Server, gestión de proyectos y requisitos, Quality Center, trazabilidad, simulación, reportes, aprendizaje, diseño responsive, accesibilidad y hardening de seguridad.
+Las **6 fases están completadas**. IngSoft Studio dispone de una base full stack estable, autenticación, autorización, persistencia SQL Server, gestión de proyectos y requisitos, Quality Center, trazabilidad, simulación, reportes ejecutivos, aprendizaje, diseño responsive, accesibilidad y hardening de seguridad.
 
 | Área | Estado | Detalle |
 |---|---|---|
@@ -275,9 +349,10 @@ Las **6 fases están completadas**. IngSoft Studio dispone de una base full stac
 | GitHub Actions | ✅ | Build, pruebas de dominio, integración y frontend |
 | Identidad y acceso | ✅ | Registro, login, JWT, roles, perfil y recuperación |
 | Ingeniería de requisitos | ✅ | Tipos, MoSCoW, criterios y trazabilidad |
-| Calidad | ✅ | Riesgos, pruebas, defectos y métricas |
-| Reportes | ✅ | PDF y Excel |
+| Quality Center | ✅ | Riesgos, pruebas, defectos, hallazgos, métricas y estados terminales |
+| Reportes | ✅ | PDF/Excel, Quality Score, Go/No-Go, branding y hora de Santo Domingo |
 | Simulador | ✅ | Escenarios, feedback e historial persistente |
+| Centro de aprendizaje | ✅ | 9 conceptos de Ingeniería de Software |
 | Responsive | ✅ | Desktop, tablet y móvil |
 | Accesibilidad | ✅ | NORTIC B2:2017 como referencia, objetivo A/AA aplicable |
 | Seguridad | ✅ | Rate limit, HSTS, headers, CORS, Identity y JWT |
@@ -307,13 +382,16 @@ Las **6 fases están completadas**. IngSoft Studio dispone de una base full stac
 ### ✅ Fase 4 — Calidad y pruebas
 - [x] Riesgos y métricas
 - [x] Casos y ejecución de pruebas
-- [x] Defectos
+- [x] Defectos y estados terminales
+- [x] Hallazgos consolidados
 - [x] Matriz de trazabilidad
 
 ### ✅ Fase 5 — Simulación y reportes
 - [x] Dashboard real y tendencias
 - [x] Simulador e historial
 - [x] PDF y Excel
+- [x] Quality Score y decisión de liberación
+- [x] Branding y zona horaria de reportes
 - [x] Centro de aprendizaje
 
 ### ✅ Fase 6 — Hardening y release
@@ -337,25 +415,35 @@ Las **6 fases están completadas**. IngSoft Studio dispone de una base full stac
 
 ### Backend
 
+El proyecto API está configurado con `UserSecretsId`, por lo que en desarrollo se recomienda utilizar **.NET User Secrets** en lugar de guardar credenciales en archivos versionados.
+
 ```powershell
-$env:Jwt__SigningKey="TU_CLAVE_LOCAL_SEGURA_DE_AL_MENOS_32_CARACTERES"
 cd backend/src/IngSoftStudio.Api
+
+dotnet user-secrets set "Jwt:SigningKey" "TU_CLAVE_LOCAL_SEGURA_DE_AL_MENOS_32_CARACTERES"
+dotnet user-secrets set "SeedAdmin:Email" "admin@ingsoftstudio.local"
+dotnet user-secrets set "SeedAdmin:FullName" "Administrador IngSoft Studio"
+dotnet user-secrets set "SeedAdmin:Password" "CambiaEstaClave123!"
+
+dotnet user-secrets list
+```
+
+Luego:
+
+```powershell
 dotnet restore
 dotnet ef database update --project ../IngSoftStudio.Infrastructure/IngSoftStudio.Infrastructure.csproj
 dotnet run
 ```
 
-Administrador inicial opcional:
-
-```powershell
-$env:SeedAdmin__Email="admin@ingsoftstudio.local"
-$env:SeedAdmin__FullName="Administrador IngSoft Studio"
-$env:SeedAdmin__Password="CambiaEstaClave123!"
-```
+> `UserSecretsId` puede versionarse de forma segura: identifica el almacén local de secretos, pero no contiene las credenciales.
 
 ### Pruebas
 
+Desde la raíz del repositorio:
+
 ```powershell
+dotnet build .\backend\src\IngSoftStudio.Api\IngSoftStudio.Api.csproj
 dotnet test backend/tests/IngSoftStudio.Domain.Tests/IngSoftStudio.Domain.Tests.csproj
 dotnet test backend/tests/IngSoftStudio.Api.IntegrationTests/IngSoftStudio.Api.IntegrationTests.csproj
 ```
@@ -366,6 +454,8 @@ dotnet test backend/tests/IngSoftStudio.Api.IntegrationTests/IngSoftStudio.Api.I
 cd frontend
 $env:VITE_API_URL="http://localhost:5000"
 npm install
+npm run lint
+npm run build
 npm run dev
 ```
 
