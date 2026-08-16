@@ -14,6 +14,8 @@ namespace IngSoftStudio.Infrastructure.Studio;
 
 public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioService
 {
+    private const string ReportLogoResourceName = "IngSoftStudio.Infrastructure.Assets.ingsoft-studio-logo.webp";
+
     private static readonly string[] PdfProjectHeaders =
     [
         "Proyecto", "Estado", "Req.", "Tests", "Cobertura", "Defectos", "Riesgos"
@@ -107,6 +109,7 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         var releaseLabel = BuildReleaseLabel(dashboard);
         var qualityScore = BuildQualityScore(dashboard);
         var pendingItems = dashboard.OpenDefects + dashboard.OpenRisks;
+        var logoBytes = LoadReportLogo();
 
         QuestPDF.Settings.License = LicenseType.Community;
 
@@ -121,16 +124,19 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
                 column.Spacing(4);
                 column.Item().Row(row =>
                 {
+                    row.ConstantItem(50).Height(50).AlignMiddle().Image(logoBytes).FitArea();
+                    row.Spacing(10);
+
                     row.RelativeItem().Column(left =>
                     {
-                        left.Item().Text("INGSOFT STUDIO").FontSize(10).Bold().FontColor("#0F766E");
-                        left.Item().Text("Reporte Ejecutivo de Calidad de Software").FontSize(21).Bold().FontColor("#0F172A");
-                        left.Item().Text("Quality Assurance & Release Readiness Report").FontSize(9).FontColor("#64748B");
+                        left.Item().Text("INGSOFT STUDIO").FontSize(8).Bold().FontColor("#0F766E");
+                        left.Item().Text("Reporte Ejecutivo de Calidad de Software").FontSize(18).Bold().FontColor("#0F172A");
+                        left.Item().Text("Quality Assurance & Release Readiness Report").FontSize(8).FontColor("#64748B");
                     });
 
-                    row.ConstantItem(132).AlignRight().Column(right =>
+                    row.ConstantItem(112).AlignRight().Column(right =>
                     {
-                        right.Item().Text($"Generado UTC").FontSize(7).Bold().FontColor("#64748B");
+                        right.Item().Text("Generado UTC").FontSize(7).Bold().FontColor("#64748B");
                         right.Item().Text($"{generatedAt:yyyy-MM-dd HH:mm}").FontSize(9).FontColor("#334155");
                     });
                 });
@@ -308,6 +314,15 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
         return new ReportFile(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ingsoft-studio-report-{DateTime.UtcNow:yyyyMMdd}.xlsx");
+    }
+
+    private static byte[] LoadReportLogo()
+    {
+        using var stream = typeof(StudioService).Assembly.GetManifestResourceStream(ReportLogoResourceName)
+            ?? throw new InvalidOperationException($"No se encontró el recurso embebido '{ReportLogoResourceName}'.");
+        using var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        return buffer.ToArray();
     }
 
     private static void AddKpiCard(IContainer container, string label, string value, string detail, string accent)
