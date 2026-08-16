@@ -15,6 +15,9 @@ namespace IngSoftStudio.Infrastructure.Studio;
 public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioService
 {
     private const string ReportLogoResourceName = "IngSoftStudio.Infrastructure.Assets.ingsoft-studio-logo.webp";
+    private const string ReportTimeZoneId = "America/Santo_Domingo";
+    private const string ReportDateFormat = "dd-MM-yyyy";
+    private const string ReportDateTimeFormat = "dd-MM-yyyy HH:mm";
 
     private static readonly string[] PdfProjectHeaders =
     [
@@ -104,7 +107,7 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
     {
         var dashboard = await GetDashboardAsync(cancellationToken);
         var projects = await GetProjectInsightsAsync(cancellationToken);
-        var generatedAt = DateTime.UtcNow;
+        var generatedAt = GetReportLocalTime();
         var releaseAssessment = BuildReleaseAssessment(dashboard);
         var releaseLabel = BuildReleaseLabel(dashboard);
         var qualityScore = BuildQualityScore(dashboard);
@@ -124,7 +127,7 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
                 column.Spacing(4);
                 column.Item().Row(row =>
                 {
-                    row.ConstantItem(50).Height(50).AlignMiddle().Image(logoBytes).FitArea();
+                    row.ConstantItem(64).Height(64).AlignMiddle().Image(logoBytes).FitArea();
                     row.Spacing(10);
 
                     row.RelativeItem().Column(left =>
@@ -136,8 +139,8 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
 
                     row.ConstantItem(112).AlignRight().Column(right =>
                     {
-                        right.Item().Text("Generado UTC").FontSize(7).Bold().FontColor("#64748B");
-                        right.Item().Text($"{generatedAt:yyyy-MM-dd HH:mm}").FontSize(9).FontColor("#334155");
+                        right.Item().Text("Generado en Santo Domingo").FontSize(7).Bold().FontColor("#64748B");
+                        right.Item().Text(generatedAt.ToString(ReportDateTimeFormat, CultureInfo.InvariantCulture)).FontSize(9).FontColor("#334155");
                     });
                 });
 
@@ -270,18 +273,21 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
             });
         })).GeneratePdf();
 
-        return new ReportFile(bytes, "application/pdf", $"ingsoft-studio-report-{generatedAt:yyyyMMdd}.pdf");
+        return new ReportFile(bytes, "application/pdf", $"ingsoft-studio-report-{generatedAt.ToString(ReportDateFormat, CultureInfo.InvariantCulture)}.pdf");
     }
 
     public async Task<ReportFile> BuildExcelReportAsync(CancellationToken cancellationToken)
     {
         var dashboard = await GetDashboardAsync(cancellationToken);
         var projects = await GetProjectInsightsAsync(cancellationToken);
+        var generatedAt = GetReportLocalTime();
         using var workbook = new XLWorkbook();
         var summary = workbook.Worksheets.Add("Resumen");
         summary.Cell("A1").Value = "IngSoft Studio — Reporte Ejecutivo de Calidad y Portafolio";
         summary.Range("A1:B1").Merge().Style.Font.SetBold().Font.SetFontSize(16);
-        summary.Cell("A2").Value = "Generado UTC"; summary.Cell("B2").Value = DateTime.UtcNow;
+        summary.Cell("A2").Value = "Generado en Santo Domingo";
+        summary.Cell("B2").Value = generatedAt;
+        summary.Cell("B2").Style.DateFormat.Format = ReportDateTimeFormat;
         var summaryRows = new (string Label, string Value)[]
         {
             ("Proyectos", dashboard.TotalProjects.ToString(CultureInfo.InvariantCulture)), ("Proyectos activos", dashboard.ActiveProjects.ToString(CultureInfo.InvariantCulture)), ("Requisitos", dashboard.TotalRequirements.ToString(CultureInfo.InvariantCulture)),
@@ -313,15 +319,52 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         definitions.Columns().AdjustToContents();
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);
-        return new ReportFile(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ingsoft-studio-report-{DateTime.UtcNow:yyyyMMdd}.xlsx");
+        return new ReportFile(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ingsoft-studio-report-{generatedAt.ToString(ReportDateFormat, CultureInfo.InvariantCulture)}.xlsx");
+    }
+
+    private static DateTime GetReportLocalTime()
+    {
+        var timeZone = TimeZoneInfo.FindSystemTimeZoneById(ReportTimeZoneId);
+        return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZone);
     }
 
     private static byte[] LoadReportLogo()
     {
-        using var stream = typeof(StudioService).Assembly.GetManifestResourceStream(ReportLogoResourceName)
-            ?? throw new InvalidOperationException($"No se encontró el recurso embebido '{ReportLogoResourceName}'.");
+        var assembly = typeof(StudioService).Assembly;
+
+        var resourceName = assembly
+            .GetManifestResourceNames()
+            .FirstOrDefault(name =>
+                string.Equals(name, ReportLogoResourceName, StringComparison.OrdinalIgnoreCase))
+            ?? assembly
+                .GetManifestResourceNames()
+                .FirstOrDefault(name =>
+                    name.EndsWith("ingsoft-studio-logo.webp", StringComparison.OrdinalIgnoreCase));
+
+        if (resourceName is null)
+        {
+            var availableResources = string.Join(
+                ", ",
+                assembly.GetManifestResourceNames().OrderBy(name => name));
+
+            throw new InvalidOperationException(
+                $"No se encontró el logo embebido '{ReportLogoResourceName}'. " +
+                $"Recursos disponibles: {availableResources}");
+        }
+
+        using var stream = assembly.GetManifestResourceStream(resourceName)
+            ?? throw new InvalidOperationException(
+                $"El recurso embebido '{resourceName}' existe en el manifiesto, pero no pudo abrirse.");
+
         using var buffer = new MemoryStream();
         stream.CopyTo(buffer);
+
+        if (buffer.Length == 0)
+        {
+            throw new InvalidOperationException(
+                $"El recurso embebido '{resourceName}' está vacío.");
+        }
+
         return buffer.ToArray();
     }
 
