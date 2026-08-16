@@ -16,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Assets\ingsoft-studio-logo.webp" />
+  <EmbeddedResource
+  Include="Assets\ingsoft-studio-logo.webp"
+  LogicalName="IngSoftStudio.Infrastructure.Assets.ingsoft-studio-logo.webp" />
   </ItemGroup>
 </Project>
