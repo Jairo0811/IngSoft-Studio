@@ -14,14 +14,9 @@ namespace IngSoftStudio.Infrastructure.Studio;
 
 public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioService
 {
-    private static readonly string[] PdfSummaryHeaders =
-    [
-        "Proyectos", "Activos", "Requisitos", "Pruebas", "Cobertura", "Pass rate", "Pendientes"
-    ];
-
     private static readonly string[] PdfProjectHeaders =
     [
-        "Proyecto", "Estado", "Req.", "Tests", "Cobertura", "Def. abiertos", "Riesgos abiertos"
+        "Proyecto", "Estado", "Req.", "Tests", "Cobertura", "Defectos", "Riesgos"
     ];
 
     private static readonly IReadOnlyCollection<SimulationScenario> Scenarios =
@@ -109,52 +104,166 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         var projects = await GetProjectInsightsAsync(cancellationToken);
         var generatedAt = DateTime.UtcNow;
         var releaseAssessment = BuildReleaseAssessment(dashboard);
+        var releaseLabel = BuildReleaseLabel(dashboard);
+        var qualityScore = BuildQualityScore(dashboard);
+        var pendingItems = dashboard.OpenDefects + dashboard.OpenRisks;
 
         QuestPDF.Settings.License = LicenseType.Community;
+
         var bytes = Document.Create(container => container.Page(page =>
         {
-            page.Margin(32);
+            page.Size(PageSizes.A4);
+            page.Margin(30);
+            page.DefaultTextStyle(style => style.FontSize(9).FontColor("#213547"));
+
             page.Header().Column(column =>
             {
-                column.Item().Text("IngSoft Studio").FontSize(11).Bold().FontColor(Colors.Teal.Medium);
-                column.Item().Text("Reporte Ejecutivo de Calidad y Portafolio").FontSize(22).Bold();
-                column.Item().Text($"Generado UTC: {generatedAt:yyyy-MM-dd HH:mm}").FontSize(9).FontColor(Colors.Grey.Medium);
+                column.Spacing(4);
+                column.Item().Row(row =>
+                {
+                    row.RelativeItem().Column(left =>
+                    {
+                        left.Item().Text("INGSOFT STUDIO").FontSize(10).Bold().FontColor("#0F766E");
+                        left.Item().Text("Reporte Ejecutivo de Calidad de Software").FontSize(21).Bold().FontColor("#0F172A");
+                        left.Item().Text("Quality Assurance & Release Readiness Report").FontSize(9).FontColor("#64748B");
+                    });
+
+                    row.ConstantItem(132).AlignRight().Column(right =>
+                    {
+                        right.Item().Text($"Generado UTC").FontSize(7).Bold().FontColor("#64748B");
+                        right.Item().Text($"{generatedAt:yyyy-MM-dd HH:mm}").FontSize(9).FontColor("#334155");
+                    });
+                });
+
+                column.Item().PaddingTop(8).Height(2).Background("#14B8A6");
             });
-            page.Content().PaddingVertical(16).Column(column =>
+
+            page.Content().PaddingVertical(14).Column(column =>
             {
                 column.Spacing(14);
-                column.Item().Text("Resumen ejecutivo").FontSize(16).Bold();
-                column.Item().Text("Consolidado de proyectos, requisitos, cobertura, ejecución de pruebas y elementos de calidad pendientes. Los indicadores utilizan la misma semántica que Studio Insights: los defectos resueltos y los riesgos aceptados no se contabilizan como abiertos.");
-                column.Item().Table(table =>
+
+                column.Item().Background("#F8FAFC").Border(1).BorderColor("#E2E8F0").Padding(12).Column(summary =>
                 {
-                    table.ColumnsDefinition(columns => { for (var i = 0; i < PdfSummaryHeaders.Length; i++) columns.RelativeColumn(); });
-                    table.Header(header => { foreach (var title in PdfSummaryHeaders) header.Cell().Padding(4).Text(title).Bold(); });
-                    table.Cell().Padding(4).Text(dashboard.TotalProjects.ToString(CultureInfo.InvariantCulture));
-                    table.Cell().Padding(4).Text(dashboard.ActiveProjects.ToString(CultureInfo.InvariantCulture));
-                    table.Cell().Padding(4).Text(dashboard.TotalRequirements.ToString(CultureInfo.InvariantCulture));
-                    table.Cell().Padding(4).Text(dashboard.TotalTests.ToString(CultureInfo.InvariantCulture));
-                    table.Cell().Padding(4).Text($"{dashboard.RequirementCoveragePercent}%");
-                    table.Cell().Padding(4).Text($"{dashboard.TestPassRatePercent}%");
-                    table.Cell().Padding(4).Text((dashboard.OpenDefects + dashboard.OpenRisks).ToString(CultureInfo.InvariantCulture));
+                    summary.Spacing(5);
+                    summary.Item().Text("Resumen ejecutivo").FontSize(13).Bold().FontColor("#0F172A");
+                    summary.Item().Text("Vista consolidada de preparación para liberación, cobertura de requisitos, ejecución de pruebas y exposición operativa del portafolio. Los defectos Resolved/Closed y los riesgos Accepted/Closed no se contabilizan como pendientes.").FontColor("#475569");
                 });
-                column.Item().Text("Evaluación de liberación").FontSize(16).Bold();
-                column.Item().Text(releaseAssessment);
-                column.Item().Text($"Defectos abiertos: {dashboard.OpenDefects} · Riesgos abiertos: {dashboard.OpenRisks}");
-                column.Item().Text("Detalle por proyecto").FontSize(16).Bold();
+
+                column.Item().Row(row =>
+                {
+                    AddKpiCard(row.RelativeItem(), "Proyectos", dashboard.TotalProjects.ToString(CultureInfo.InvariantCulture), "Portafolio total", "#0F766E");
+                    row.Spacing(7);
+                    AddKpiCard(row.RelativeItem(), "Requisitos", dashboard.TotalRequirements.ToString(CultureInfo.InvariantCulture), $"{dashboard.RequirementCoveragePercent}% cubiertos", "#2563EB");
+                    row.Spacing(7);
+                    AddKpiCard(row.RelativeItem(), "Pruebas", dashboard.TotalTests.ToString(CultureInfo.InvariantCulture), $"{dashboard.PassedTests} aprobadas", "#7C3AED");
+                });
+
+                column.Item().Row(row =>
+                {
+                    AddKpiCard(row.RelativeItem(), "Cobertura", $"{dashboard.RequirementCoveragePercent}%", "Requisitos con evidencia", "#0891B2");
+                    row.Spacing(7);
+                    AddKpiCard(row.RelativeItem(), "Pass rate", $"{dashboard.TestPassRatePercent}%", "Pruebas aprobadas", "#16A34A");
+                    row.Spacing(7);
+                    AddKpiCard(row.RelativeItem(), "Pendientes", pendingItems.ToString(CultureInfo.InvariantCulture), $"{dashboard.OpenDefects} defectos · {dashboard.OpenRisks} riesgos", pendingItems == 0 ? "#16A34A" : "#DC2626");
+                });
+
+                column.Item().Background(ReleaseBackground(releaseLabel)).Border(1).BorderColor(ReleaseAccent(releaseLabel)).Padding(13).Row(row =>
+                {
+                    row.RelativeItem().Column(left =>
+                    {
+                        left.Spacing(4);
+                        left.Item().Text("DECISIÓN DE LIBERACIÓN").FontSize(8).Bold().FontColor(ReleaseAccent(releaseLabel));
+                        left.Item().Text(releaseLabel).FontSize(20).Bold().FontColor("#0F172A");
+                        left.Item().Text(releaseAssessment).FontSize(9).FontColor("#334155");
+                    });
+
+                    row.ConstantItem(92).AlignRight().Column(score =>
+                    {
+                        score.Item().AlignRight().Text("QUALITY SCORE").FontSize(7).Bold().FontColor("#64748B");
+                        score.Item().AlignRight().Text($"{qualityScore}/100").FontSize(21).Bold().FontColor(ReleaseAccent(releaseLabel));
+                    });
+                });
+
+                column.Item().Text("Evidencia de calidad").FontSize(13).Bold().FontColor("#0F172A");
+                column.Item().Row(row =>
+                {
+                    row.RelativeItem().Background("#F8FAFC").Border(1).BorderColor("#E2E8F0").Padding(9).Column(item =>
+                    {
+                        item.Item().Text("Cobertura de requisitos").FontSize(8).Bold().FontColor("#475569");
+                        item.Item().Text($"{dashboard.RequirementCoveragePercent}%").FontSize(16).Bold().FontColor("#0891B2");
+                        item.Item().Text($"{dashboard.TotalRequirements} requisitos registrados").FontSize(8).FontColor("#64748B");
+                    });
+                    row.Spacing(7);
+                    row.RelativeItem().Background("#F8FAFC").Border(1).BorderColor("#E2E8F0").Padding(9).Column(item =>
+                    {
+                        item.Item().Text("Ejecución de pruebas").FontSize(8).Bold().FontColor("#475569");
+                        item.Item().Text($"{dashboard.PassedTests}/{dashboard.TotalTests}").FontSize(16).Bold().FontColor("#7C3AED");
+                        item.Item().Text($"Pass rate {dashboard.TestPassRatePercent}%").FontSize(8).FontColor("#64748B");
+                    });
+                    row.Spacing(7);
+                    row.RelativeItem().Background("#F8FAFC").Border(1).BorderColor("#E2E8F0").Padding(9).Column(item =>
+                    {
+                        item.Item().Text("Exposición pendiente").FontSize(8).Bold().FontColor("#475569");
+                        item.Item().Text(pendingItems.ToString(CultureInfo.InvariantCulture)).FontSize(16).Bold().FontColor(pendingItems == 0 ? "#16A34A" : "#DC2626");
+                        item.Item().Text("Defectos + riesgos abiertos").FontSize(8).FontColor("#64748B");
+                    });
+                });
+
+                column.Item().Text("Detalle por proyecto").FontSize(13).Bold().FontColor("#0F172A");
                 column.Item().Table(table =>
                 {
-                    table.ColumnsDefinition(columns => { columns.RelativeColumn(3); for (var i = 1; i < PdfProjectHeaders.Length; i++) columns.RelativeColumn(); });
-                    table.Header(header => { foreach (var title in PdfProjectHeaders) header.Cell().Padding(3).Text(title).Bold(); });
+                    table.ColumnsDefinition(columns =>
+                    {
+                        columns.RelativeColumn(2.7f);
+                        columns.RelativeColumn(1.1f);
+                        columns.RelativeColumn(.7f);
+                        columns.RelativeColumn(.7f);
+                        columns.RelativeColumn(1f);
+                        columns.RelativeColumn(.9f);
+                        columns.RelativeColumn(.9f);
+                    });
+
+                    table.Header(header =>
+                    {
+                        foreach (var title in PdfProjectHeaders)
+                        {
+                            header.Cell().Background("#0F172A").PaddingVertical(6).PaddingHorizontal(5).Text(title).FontSize(7).Bold().FontColor("#FFFFFF");
+                        }
+                    });
+
                     foreach (var project in projects)
                     {
-                        table.Cell().Padding(3).Text(project.ProjectName); table.Cell().Padding(3).Text(project.Status); table.Cell().Padding(3).Text(project.Requirements.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text(project.Tests.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text($"{project.CoveragePercent}%"); table.Cell().Padding(3).Text(project.OpenDefects.ToString(CultureInfo.InvariantCulture)); table.Cell().Padding(3).Text(project.OpenRisks.ToString(CultureInfo.InvariantCulture));
+                        table.Cell().BorderBottom(1).BorderColor("#E2E8F0").Padding(5).Text(project.ProjectName).FontSize(8).Bold();
+                        table.Cell().BorderBottom(1).BorderColor("#E2E8F0").Padding(5).Text(project.Status).FontSize(8);
+                        table.Cell().BorderBottom(1).BorderColor("#E2E8F0").Padding(5).AlignCenter().Text(project.Requirements.ToString(CultureInfo.InvariantCulture)).FontSize(8);
+                        table.Cell().BorderBottom(1).BorderColor("#E2E8F0").Padding(5).AlignCenter().Text(project.Tests.ToString(CultureInfo.InvariantCulture)).FontSize(8);
+                        table.Cell().BorderBottom(1).BorderColor("#E2E8F0").Padding(5).AlignCenter().Text($"{project.CoveragePercent}%").FontSize(8).Bold();
+                        table.Cell().BorderBottom(1).BorderColor("#E2E8F0").Padding(5).AlignCenter().Text(project.OpenDefects.ToString(CultureInfo.InvariantCulture)).FontSize(8);
+                        table.Cell().BorderBottom(1).BorderColor("#E2E8F0").Padding(5).AlignCenter().Text(project.OpenRisks.ToString(CultureInfo.InvariantCulture)).FontSize(8);
                     }
                 });
-                column.Item().Text("Criterios de interpretación").FontSize(16).Bold();
-                column.Item().Text("• Cobertura: requisitos con al menos un caso de prueba asociado.\n• Pass rate: casos de prueba aprobados sobre el total registrado.\n• Defectos abiertos: estados operativos pendientes; Resolved y Closed quedan fuera.\n• Riesgos abiertos: riesgos todavía gestionables; Accepted y Closed quedan fuera.");
+
+                column.Item().Background("#F8FAFC").BorderLeft(3).BorderColor("#14B8A6").Padding(10).Column(criteria =>
+                {
+                    criteria.Spacing(3);
+                    criteria.Item().Text("Criterios de interpretación").FontSize(10).Bold().FontColor("#0F172A");
+                    criteria.Item().Text("• Cobertura: requisitos con al menos un caso de prueba asociado.\n• Pass rate: casos de prueba aprobados sobre el total registrado.\n• Defectos abiertos: Resolved y Closed quedan fuera.\n• Riesgos abiertos: Accepted y Closed quedan fuera.\n• Quality Score: indicador ejecutivo derivado de cobertura, pass rate y ausencia de pendientes.").FontSize(8).FontColor("#475569");
+                });
             });
-            page.Footer().AlignCenter().Text("IngSoft Studio · Engineering Better Software").FontSize(9).FontColor(Colors.Grey.Medium);
+
+            page.Footer().PaddingTop(8).BorderTop(1).BorderColor("#E2E8F0").Row(row =>
+            {
+                row.RelativeItem().Text("IngSoft Studio · Engineering Better Software").FontSize(8).FontColor("#64748B");
+                row.RelativeItem().AlignRight().Text(text =>
+                {
+                    text.Span("Página ").FontSize(8).FontColor("#64748B");
+                    text.CurrentPageNumber().FontSize(8).FontColor("#64748B");
+                    text.Span(" de ").FontSize(8).FontColor("#64748B");
+                    text.TotalPages().FontSize(8).FontColor("#64748B");
+                });
+            });
         })).GeneratePdf();
+
         return new ReportFile(bytes, "application/pdf", $"ingsoft-studio-report-{generatedAt:yyyyMMdd}.pdf");
     }
 
@@ -201,6 +310,17 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         return new ReportFile(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"ingsoft-studio-report-{DateTime.UtcNow:yyyyMMdd}.xlsx");
     }
 
+    private static void AddKpiCard(IContainer container, string label, string value, string detail, string accent)
+    {
+        container.Background("#FFFFFF").Border(1).BorderColor("#E2E8F0").Padding(9).Column(column =>
+        {
+            column.Spacing(2);
+            column.Item().Text(label.ToUpperInvariant()).FontSize(7).Bold().FontColor("#64748B");
+            column.Item().Text(value).FontSize(17).Bold().FontColor(accent);
+            column.Item().Text(detail).FontSize(7).FontColor("#64748B");
+        });
+    }
+
     private static string BuildReleaseAssessment(PortfolioDashboard dashboard)
     {
         if (dashboard.OpenDefects > 0) return "NO-GO: existen defectos abiertos que requieren evaluación antes de liberar.";
@@ -209,6 +329,41 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         if (dashboard.TotalTests > 0 && dashboard.TestPassRatePercent < 100) return "REVISAR: no todos los casos de prueba registrados están aprobados.";
         return dashboard.TotalTests == 0 ? "SIN EVIDENCIA: todavía no existen casos de prueba para sustentar una decisión de liberación." : "GO: no existen defectos ni riesgos abiertos y la evidencia de pruebas registrada cumple los criterios actuales.";
     }
+
+    private static string BuildReleaseLabel(PortfolioDashboard dashboard)
+    {
+        if (dashboard.OpenDefects > 0) return "NO-GO";
+        if (dashboard.OpenRisks > 0) return "REVISAR";
+        if (dashboard.TotalRequirements > 0 && dashboard.RequirementCoveragePercent < 100) return "REVISAR";
+        if (dashboard.TotalTests > 0 && dashboard.TestPassRatePercent < 100) return "REVISAR";
+        return dashboard.TotalTests == 0 ? "SIN EVIDENCIA" : "GO";
+    }
+
+    private static int BuildQualityScore(PortfolioDashboard dashboard)
+    {
+        if (dashboard.TotalTests == 0) return 0;
+
+        var coverageScore = (double)dashboard.RequirementCoveragePercent * 0.45;
+        var passRateScore = (double)dashboard.TestPassRatePercent * 0.45;
+        var pendingPenalty = Math.Min((dashboard.OpenDefects * 12) + (dashboard.OpenRisks * 8), 40);
+        return Math.Clamp((int)Math.Round(coverageScore + passRateScore + 10 - pendingPenalty), 0, 100);
+    }
+
+    private static string ReleaseAccent(string releaseLabel) => releaseLabel switch
+    {
+        "GO" => "#16A34A",
+        "NO-GO" => "#DC2626",
+        "SIN EVIDENCIA" => "#64748B",
+        _ => "#D97706"
+    };
+
+    private static string ReleaseBackground(string releaseLabel) => releaseLabel switch
+    {
+        "GO" => "#F0FDF4",
+        "NO-GO" => "#FEF2F2",
+        "SIN EVIDENCIA" => "#F8FAFC",
+        _ => "#FFFBEB"
+    };
 
     private static decimal Percent(int value, int total) => total == 0 ? 0 : decimal.Round((decimal)value / total * 100, 2);
 }
