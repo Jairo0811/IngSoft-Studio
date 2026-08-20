@@ -38,6 +38,11 @@ public sealed class IngSoftStudioDbContext(DbContextOptions<IngSoftStudioDbConte
             entity.Property(project => project.Description).HasMaxLength(1000);
             entity.Property(project => project.Status).HasConversion<string>().HasMaxLength(30);
             entity.HasIndex(project => project.Name);
+            entity.HasIndex(project => project.OwnerId);
+            entity.HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(project => project.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         builder.Entity<Requirement>(entity =>

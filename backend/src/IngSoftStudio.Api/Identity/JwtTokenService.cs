@@ -23,7 +23,8 @@ public sealed class JwtTokenService(IOptions<JwtOptions> options, UserManager<Ap
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.FullName)
+            new(ClaimTypes.Name, user.FullName),
+            new("security_stamp_hash", SecurityStampHasher.Hash(user.SecurityStamp))
         };
 
         claims.AddRange(roleArray.Select(role => new Claim(ClaimTypes.Role, role)));

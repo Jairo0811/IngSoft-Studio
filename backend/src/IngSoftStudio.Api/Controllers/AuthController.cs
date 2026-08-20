@@ -4,6 +4,7 @@ using IngSoftStudio.Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace IngSoftStudio.Api.Controllers;
 
@@ -12,11 +13,11 @@ namespace IngSoftStudio.Api.Controllers;
 public sealed class AuthController(
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    JwtTokenService jwtTokenService,
-    IWebHostEnvironment environment) : ControllerBase
+    JwtTokenService jwtTokenService) : ControllerBase
 {
     [HttpPost("register")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
         var email = request.Email.Trim();
@@ -68,6 +69,7 @@ public sealed class AuthController(
 
     [HttpPost("login")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.Email.Trim());
@@ -145,6 +147,7 @@ public sealed class AuthController(
 
     [HttpPost("forgot-password")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.Email.Trim());
@@ -153,12 +156,15 @@ public sealed class AuthController(
             return Accepted();
         }
 
-        var token = await userManager.GeneratePasswordResetTokenAsync(user);
-        return environment.IsDevelopment() ? Accepted(new { resetToken = token }) : Accepted();
+        // The reset token must be delivered through a separately configured,
+        // verified out-of-band channel. It is never returned or logged by the API.
+        _ = await userManager.GeneratePasswordResetTokenAsync(user);
+        return Accepted();
     }
 
     [HttpPost("reset-password")]
     [AllowAnonymous]
+    [EnableRateLimiting("auth")]
     public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
     {
         var user = await userManager.FindByEmailAsync(request.Email.Trim());

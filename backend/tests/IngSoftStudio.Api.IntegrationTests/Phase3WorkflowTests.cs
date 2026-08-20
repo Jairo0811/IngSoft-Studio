@@ -56,4 +56,102 @@ public sealed class Phase3WorkflowTests(ApiFactory factory) : IClassFixture<ApiF
         using var listJson = JsonDocument.Parse(await listResponse.Content.ReadAsStringAsync(cancellationToken));
         Assert.Single(listJson.RootElement.EnumerateArray());
     }
+
+    [Fact]
+    public async Task UserCannotReadAnotherUsersProject()
+    {
+        using var ownerClient = factory.CreateClient();
+        using var otherClient = factory.CreateClient();
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        await RegisterAndAuthenticateAsync(ownerClient, cancellationToken);
+        var projectResponse = await ownerClient.PostAsJsonAsync(
+            "/api/v1/projects",
+            new { name = "Proyecto privado", description = "Solo pertenece a su creador" },
+            cancellationToken);
+        Assert.Equal(HttpStatusCode.Created, projectResponse.StatusCode);
+
+        using var projectJson = JsonDocument.Parse(
+            await projectResponse.Content.ReadAsStringAsync(cancellationToken));
+        var projectId = projectJson.RootElement.GetProperty("id").GetGuid();
+
+        await RegisterAndAuthenticateAsync(otherClient, cancellationToken);
+
+        var projectRead = await otherClient.GetAsync(
+            $"/api/v1/projects/{projectId}", cancellationToken);
+        var requirementsRead = await otherClient.GetAsync(
+            $"/api/v1/projects/{projectId}/requirements", cancellationToken);
+        var qualityRead = await otherClient.GetAsync(
+            $"/api/v1/projects/{projectId}/quality", cancellationToken);
+
+        Assert.Equal(HttpStatusCode.NotFound, projectRead.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, requirementsRead.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, qualityRead.StatusCode);
+    }
+
+    [Fact]
+    public async Task AnonymousRequestsAndOversizedInputAreRejected()
+    {
+        using var anonymousClient = factory.CreateClient();
+        using var authenticatedClient = factory.CreateClient();
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        var anonymousResponse = await anonymousClient.GetAsync(
+            "/api/v1/projects", cancellationToken);
+        Assert.Equal(HttpStatusCode.Unauthorized, anonymousResponse.StatusCode);
+
+        await RegisterAndAuthenticateAsync(authenticatedClient, cancellationToken);
+        var invalidResponse = await authenticatedClient.PostAsJsonAsync(
+            "/api/v1/projects",
+            new { name = new string('x', 151), description = "Invalid input" },
+            cancellationToken);
+
+        Assert.Equal(HttpStatusCode.BadRequest, invalidResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task PasswordChangeRevokesThePreviousToken()
+    {
+        using var client = factory.CreateClient();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        await RegisterAndAuthenticateAsync(client, cancellationToken);
+
+        var changeResponse = await client.PostAsJsonAsync(
+            "/api/auth/change-password",
+            new
+            {
+                currentPassword = "StrongPass123!",
+                newPassword = "DifferentPass456!"
+            },
+            cancellationToken);
+
+        Assert.Equal(HttpStatusCode.NoContent, changeResponse.StatusCode);
+
+        var oldTokenResponse = await client.GetAsync(
+            "/api/auth/me", cancellationToken);
+        Assert.Equal(HttpStatusCode.Unauthorized, oldTokenResponse.StatusCode);
+    }
+
+    private static async Task RegisterAndAuthenticateAsync(
+        HttpClient client,
+        CancellationToken cancellationToken)
+    {
+        var response = await client.PostAsJsonAsync(
+            "/api/auth/register",
+            new
+            {
+                fullName = "Isolation Test",
+                email = $"isolation-{Guid.NewGuid():N}@tests.local",
+                password = "StrongPass123!"
+            },
+            cancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        using var json = JsonDocument.Parse(
+            await response.Content.ReadAsStringAsync(cancellationToken));
+        var token = json.RootElement.GetProperty("accessToken").GetString();
+        Assert.False(string.IsNullOrWhiteSpace(token));
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+    }
 }

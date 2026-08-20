@@ -55,7 +55,7 @@ export default function AuthPage() {
         <form onSubmit={handleSubmit} className="auth-form">
           {mode === 'register' && <label>Nombre completo<input value={fullName} onChange={(event) => setFullName(event.target.value)} required maxLength={150} autoComplete="name" /></label>}
           <label>Correo electrónico<input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" /></label>
-          <label>Contraseña<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={8} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} /></label>
+          <label>Contraseña<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={mode === 'register' ? 12 : 1} maxLength={128} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} /></label>
           {error && <p className="form-error" role="alert">{error}</p>}
           <button type="submit" disabled={submitting}>{submitting ? 'Procesando…' : mode === 'login' ? 'Entrar al Studio' : 'Crear cuenta'}</button>
         </form>

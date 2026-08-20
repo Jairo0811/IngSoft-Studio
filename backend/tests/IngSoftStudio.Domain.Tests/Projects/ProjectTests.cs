@@ -9,9 +9,11 @@ public sealed class ProjectTests
     [Fact]
     public void ConstructorCreatesDraftProjectWhenDataIsValid()
     {
-        var project = new Project("  IngSoft Studio  ", "  Plataforma de ingeniería de software  ");
+        var ownerId = Guid.NewGuid();
+        var project = new Project(ownerId, "  IngSoft Studio  ", "  Plataforma de ingeniería de software  ");
 
         project.Id.Should().NotBeEmpty();
+        project.OwnerId.Should().Be(ownerId);
         project.Name.Should().Be("IngSoft Studio");
         project.Description.Should().Be("Plataforma de ingeniería de software");
         project.Status.Should().Be(ProjectStatus.Draft);
@@ -21,7 +23,7 @@ public sealed class ProjectTests
     [Fact]
     public void ConstructorRejectsEmptyName()
     {
-        var action = () => new Project("   ", null);
+        var action = () => new Project(Guid.NewGuid(), "   ", null);
 
         action.Should().Throw<ArgumentException>()
             .WithParameterName("name");
@@ -30,7 +32,7 @@ public sealed class ProjectTests
     [Fact]
     public void RenameTrimsNameAndUpdatesTimestamp()
     {
-        var project = new Project("Original", null);
+        var project = new Project(Guid.NewGuid(), "Original", null);
 
         project.Rename("  Nuevo nombre  ");
 

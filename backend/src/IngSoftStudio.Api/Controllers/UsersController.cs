@@ -32,7 +32,8 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) : 
     [HttpPut("{userId:guid}/roles/{roleName}")]
     public async Task<IActionResult> AddRole(Guid userId, string roleName)
     {
-        if (roleName is not ("Admin" or "User"))
+        var normalizedRole = NormalizeRole(roleName);
+        if (normalizedRole is null)
         {
             return BadRequest(new ProblemDetails { Title = "Unsupported role" });
         }
@@ -43,13 +44,25 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) : 
             return NotFound();
         }
 
-        var result = await userManager.AddToRoleAsync(user, roleName);
-        return result.Succeeded ? NoContent() : BadRequest(CreateValidationProblem(result));
+        var result = await userManager.AddToRoleAsync(user, normalizedRole);
+        if (!result.Succeeded)
+        {
+            return BadRequest(CreateValidationProblem(result));
+        }
+
+        await userManager.UpdateSecurityStampAsync(user);
+        return NoContent();
     }
 
     [HttpDelete("{userId:guid}/roles/{roleName}")]
     public async Task<IActionResult> RemoveRole(Guid userId, string roleName)
     {
+        var normalizedRole = NormalizeRole(roleName);
+        if (normalizedRole is null)
+        {
+            return BadRequest(new ProblemDetails { Title = "Unsupported role" });
+        }
+
         var user = await userManager.FindByIdAsync(userId.ToString());
         if (user is null)
         {
@@ -57,14 +70,39 @@ public sealed class UsersController(UserManager<ApplicationUser> userManager) : 
         }
 
         var currentRoles = await userManager.GetRolesAsync(user);
-        if (currentRoles.Count == 1 && currentRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase))
+        if (currentRoles.Count == 1 && currentRoles.Contains(normalizedRole, StringComparer.OrdinalIgnoreCase))
         {
             return Conflict(new ProblemDetails { Title = "A user must retain at least one role." });
         }
 
-        var result = await userManager.RemoveFromRoleAsync(user, roleName);
-        return result.Succeeded ? NoContent() : BadRequest(CreateValidationProblem(result));
+        if (normalizedRole == "Admin" && currentRoles.Contains("Admin", StringComparer.OrdinalIgnoreCase))
+        {
+            var admins = await userManager.GetUsersInRoleAsync("Admin");
+            if (admins.Count <= 1)
+            {
+                return Conflict(new ProblemDetails
+                {
+                    Title = "The last administrator cannot lose the Admin role."
+                });
+            }
+        }
+
+        var result = await userManager.RemoveFromRoleAsync(user, normalizedRole);
+        if (!result.Succeeded)
+        {
+            return BadRequest(CreateValidationProblem(result));
+        }
+
+        await userManager.UpdateSecurityStampAsync(user);
+        return NoContent();
     }
+
+    private static string? NormalizeRole(string roleName) =>
+        roleName.Equals("Admin", StringComparison.OrdinalIgnoreCase)
+            ? "Admin"
+            : roleName.Equals("User", StringComparison.OrdinalIgnoreCase)
+                ? "User"
+                : null;
 
     private static ValidationProblemDetails CreateValidationProblem(IdentityResult result) =>
         new(result.Errors
