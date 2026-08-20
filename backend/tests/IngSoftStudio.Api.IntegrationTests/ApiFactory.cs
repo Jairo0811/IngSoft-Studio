@@ -16,6 +16,15 @@ public sealed class ApiFactory : WebApplicationFactory<Program>
     public ApiFactory()
     {
         _connection.Open();
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Development");
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Development");
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__DefaultConnection",
+            "Server=(localdb)\\MSSQLLocalDB;Database=IngSoftStudioTests;Trusted_Connection=True");
+        Environment.SetEnvironmentVariable(
+            "Frontend__AllowedOrigins__0",
+            "https://localhost:5173");
+        Environment.SetEnvironmentVariable("AllowedHosts", "localhost");
         Environment.SetEnvironmentVariable("Jwt__Issuer", "IngSoftStudio.Tests");
         Environment.SetEnvironmentVariable("Jwt__Audience", "IngSoftStudio.Tests");
         Environment.SetEnvironmentVariable("Jwt__SigningKey", "integration-tests-only-signing-key-1234567890");
