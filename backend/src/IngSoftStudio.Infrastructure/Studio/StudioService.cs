@@ -1,6 +1,7 @@
 using System.Globalization;
 using ClosedXML.Excel;
 using IngSoftStudio.Application.Studio;
+using IngSoftStudio.Application.Common;
 using IngSoftStudio.Domain.Projects;
 using IngSoftStudio.Domain.Quality;
 using IngSoftStudio.Domain.Studio;
@@ -12,7 +13,7 @@ using QuestPDF.Infrastructure;
 
 namespace IngSoftStudio.Infrastructure.Studio;
 
-public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioService
+public sealed class StudioService(IngSoftStudioDbContext dbContext, ICurrentUser currentUser) : IStudioService
 {
     private const string ReportLogoResourceName = "IngSoftStudio.Infrastructure.Assets.ingsoft-studio-logo.webp";
     private const string ReportTimeZoneId = "America/Santo_Domingo";
@@ -48,19 +49,20 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
 
     public async Task<PortfolioDashboard> GetDashboardAsync(CancellationToken cancellationToken)
     {
-        var projects = await dbContext.Projects.AsNoTracking().GroupBy(_ => 1).Select(group => new { Total = group.Count(), Draft = group.Count(x => x.Status == ProjectStatus.Draft), Active = group.Count(x => x.Status == ProjectStatus.Active), Completed = group.Count(x => x.Status == ProjectStatus.Completed), Archived = group.Count(x => x.Status == ProjectStatus.Archived) }).SingleOrDefaultAsync(cancellationToken);
-        var totalRequirements = await dbContext.Requirements.CountAsync(cancellationToken);
-        var coveredRequirements = await dbContext.TestCases.Where(x => x.RequirementId != null).Select(x => x.RequirementId).Distinct().CountAsync(cancellationToken);
-        var totalTests = await dbContext.TestCases.CountAsync(cancellationToken);
-        var passedTests = await dbContext.TestCases.CountAsync(x => x.Status == TestCaseStatus.Passed, cancellationToken);
-        var openDefects = await dbContext.Defects.CountAsync(x => x.Status != DefectStatus.Closed && x.Status != DefectStatus.Resolved, cancellationToken);
-        var openRisks = await dbContext.Risks.CountAsync(x => x.Status != RiskStatus.Closed && x.Status != RiskStatus.Accepted, cancellationToken);
+        var ownedProjectIds = dbContext.Projects.Where(x => x.OwnerId == currentUser.UserId).Select(x => x.Id);
+        var projects = await dbContext.Projects.AsNoTracking().Where(x => x.OwnerId == currentUser.UserId).GroupBy(_ => 1).Select(group => new { Total = group.Count(), Draft = group.Count(x => x.Status == ProjectStatus.Draft), Active = group.Count(x => x.Status == ProjectStatus.Active), Completed = group.Count(x => x.Status == ProjectStatus.Completed), Archived = group.Count(x => x.Status == ProjectStatus.Archived) }).SingleOrDefaultAsync(cancellationToken);
+        var totalRequirements = await dbContext.Requirements.CountAsync(x => ownedProjectIds.Contains(x.ProjectId), cancellationToken);
+        var coveredRequirements = await dbContext.TestCases.Where(x => ownedProjectIds.Contains(x.ProjectId) && x.RequirementId != null).Select(x => x.RequirementId).Distinct().CountAsync(cancellationToken);
+        var totalTests = await dbContext.TestCases.CountAsync(x => ownedProjectIds.Contains(x.ProjectId), cancellationToken);
+        var passedTests = await dbContext.TestCases.CountAsync(x => ownedProjectIds.Contains(x.ProjectId) && x.Status == TestCaseStatus.Passed, cancellationToken);
+        var openDefects = await dbContext.Defects.CountAsync(x => ownedProjectIds.Contains(x.ProjectId) && x.Status != DefectStatus.Closed && x.Status != DefectStatus.Resolved, cancellationToken);
+        var openRisks = await dbContext.Risks.CountAsync(x => ownedProjectIds.Contains(x.ProjectId) && x.Status != RiskStatus.Closed && x.Status != RiskStatus.Accepted, cancellationToken);
         return new PortfolioDashboard(projects?.Total ?? 0, projects?.Draft ?? 0, projects?.Active ?? 0, projects?.Completed ?? 0, projects?.Archived ?? 0, totalRequirements, totalTests, passedTests, openDefects, openRisks, Percent(passedTests, totalTests), Percent(coveredRequirements, totalRequirements));
     }
 
     public async Task<IReadOnlyCollection<ProjectInsight>> GetProjectInsightsAsync(CancellationToken cancellationToken)
     {
-        var projects = await dbContext.Projects.AsNoTracking().OrderBy(x => x.Name).ToListAsync(cancellationToken);
+        var projects = await dbContext.Projects.AsNoTracking().Where(x => x.OwnerId == currentUser.UserId).OrderBy(x => x.Name).ToListAsync(cancellationToken);
         var result = new List<ProjectInsight>(projects.Count);
         foreach (var project in projects)
         {

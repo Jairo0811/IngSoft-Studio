@@ -4,15 +4,18 @@ public sealed class Project
 {
     private Project() { }
 
-    public Project(string name, string? description)
+    public Project(Guid ownerId, string name, string? description)
     {
+        if (ownerId == Guid.Empty) throw new ArgumentException("Project owner is required.", nameof(ownerId));
         Id = Guid.NewGuid();
+        OwnerId = ownerId;
         Update(name, description);
         Status = ProjectStatus.Draft;
         CreatedAtUtc = DateTime.UtcNow;
     }
 
     public Guid Id { get; private set; }
+    public Guid OwnerId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public string? Description { get; private set; }
     public ProjectStatus Status { get; private set; }

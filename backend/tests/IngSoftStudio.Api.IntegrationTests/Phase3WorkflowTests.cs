@@ -9,6 +9,43 @@ namespace IngSoftStudio.Api.IntegrationTests;
 public sealed class Phase3WorkflowTests(ApiFactory factory) : IClassFixture<ApiFactory>
 {
     [Fact]
+    public async Task UserCannotAccessOrModifyAnotherUsersProject()
+    {
+        using var ownerClient = factory.CreateClient();
+        using var attackerClient = factory.CreateClient();
+        var cancellationToken = TestContext.Current.CancellationToken;
+        ownerClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer", await RegisterAndGetToken(ownerClient, cancellationToken));
+        attackerClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer", await RegisterAndGetToken(attackerClient, cancellationToken));
+
+        var created = await ownerClient.PostAsJsonAsync(
+            "/api/v1/projects",
+            new { name = "Proyecto privado", description = "Solo del propietario" },
+            cancellationToken);
+        created.EnsureSuccessStatusCode();
+        using var projectJson = JsonDocument.Parse(await created.Content.ReadAsStringAsync(cancellationToken));
+        var projectId = projectJson.RootElement.GetProperty("id").GetGuid();
+
+        Assert.Equal(HttpStatusCode.NotFound,
+            (await attackerClient.GetAsync($"/api/v1/projects/{projectId}", cancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound,
+            (await attackerClient.PutAsJsonAsync($"/api/v1/projects/{projectId}", new { name = "Secuestrado", description = "IDOR" }, cancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound,
+            (await attackerClient.DeleteAsync($"/api/v1/projects/{projectId}", cancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound,
+            (await attackerClient.PostAsJsonAsync(
+                $"/api/v1/projects/{projectId}/requirements",
+                new { title = "Ataque", description = "IDOR", type = 1, priority = 1 },
+                cancellationToken)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound,
+            (await attackerClient.GetAsync($"/api/v1/projects/{projectId}/quality", cancellationToken)).StatusCode);
+
+        using var attackerList = JsonDocument.Parse(await attackerClient.GetStringAsync("/api/v1/projects", cancellationToken));
+        Assert.DoesNotContain(attackerList.RootElement.EnumerateArray(), item => item.GetProperty("id").GetGuid() == projectId);
+    }
+
+    [Fact]
     public async Task AuthenticatedUserCanCreateProjectAndRequirement()
     {
         using var client = factory.CreateClient();
@@ -55,5 +92,16 @@ public sealed class Phase3WorkflowTests(ApiFactory factory) : IClassFixture<ApiF
 
         using var listJson = JsonDocument.Parse(await listResponse.Content.ReadAsStringAsync(cancellationToken));
         Assert.Single(listJson.RootElement.EnumerateArray());
+    }
+
+    private static async Task<string> RegisterAndGetToken(HttpClient client, CancellationToken cancellationToken)
+    {
+        var response = await client.PostAsJsonAsync(
+            "/api/auth/register",
+            new { fullName = "IDOR Test User", email = $"idor-{Guid.NewGuid():N}@tests.local", password = "StrongPass123!" },
+            cancellationToken);
+        response.EnsureSuccessStatusCode();
+        using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync(cancellationToken));
+        return json.RootElement.GetProperty("accessToken").GetString()!;
     }
 }

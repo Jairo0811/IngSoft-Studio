@@ -1,4 +1,5 @@
 using IngSoftStudio.Application.Quality;
+using IngSoftStudio.Application.Projects;
 using IngSoftStudio.Domain.Quality;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,15 +9,21 @@ namespace IngSoftStudio.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/v1/projects/{projectId:guid}/quality")]
-public sealed class QualityController(IQualityService service) : ControllerBase
+public sealed class QualityController(IQualityService service, IProjectService projects) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<QualityDashboard>> GetDashboard(Guid projectId, CancellationToken cancellationToken) =>
-        Ok(await service.GetDashboardAsync(projectId, cancellationToken));
+    public async Task<ActionResult<QualityDashboard>> GetDashboard(Guid projectId, CancellationToken cancellationToken)
+    {
+        if (await projects.GetByIdAsync(projectId, cancellationToken) is null) return NotFound();
+        return Ok(await service.GetDashboardAsync(projectId, cancellationToken));
+    }
 
     [HttpPost("risks")]
-    public async Task<ActionResult<RiskResponse>> CreateRisk(Guid projectId, CreateRiskRequest request, CancellationToken cancellationToken) =>
-        Ok(await service.CreateRiskAsync(projectId, request, cancellationToken));
+    public async Task<ActionResult<RiskResponse>> CreateRisk(Guid projectId, CreateRiskRequest request, CancellationToken cancellationToken)
+    {
+        if (await projects.GetByIdAsync(projectId, cancellationToken) is null) return NotFound();
+        return Ok(await service.CreateRiskAsync(projectId, request, cancellationToken));
+    }
 
     [HttpPatch("risks/{riskId:guid}/status")]
     public async Task<ActionResult<RiskResponse>> ChangeRiskStatus(Guid projectId, Guid riskId, ChangeRiskStatusRequest request, CancellationToken cancellationToken)
@@ -26,8 +33,11 @@ public sealed class QualityController(IQualityService service) : ControllerBase
     }
 
     [HttpPost("tests")]
-    public async Task<ActionResult<TestCaseResponse>> CreateTestCase(Guid projectId, CreateTestCaseRequest request, CancellationToken cancellationToken) =>
-        Ok(await service.CreateTestCaseAsync(projectId, request, cancellationToken));
+    public async Task<ActionResult<TestCaseResponse>> CreateTestCase(Guid projectId, CreateTestCaseRequest request, CancellationToken cancellationToken)
+    {
+        if (await projects.GetByIdAsync(projectId, cancellationToken) is null) return NotFound();
+        return Ok(await service.CreateTestCaseAsync(projectId, request, cancellationToken));
+    }
 
     [HttpPatch("tests/{testCaseId:guid}/execute")]
     public async Task<ActionResult<TestCaseResponse>> ExecuteTest(Guid projectId, Guid testCaseId, ExecuteTestCaseRequest request, CancellationToken cancellationToken)
@@ -37,8 +47,11 @@ public sealed class QualityController(IQualityService service) : ControllerBase
     }
 
     [HttpPost("defects")]
-    public async Task<ActionResult<DefectResponse>> CreateDefect(Guid projectId, CreateDefectRequest request, CancellationToken cancellationToken) =>
-        Ok(await service.CreateDefectAsync(projectId, request, cancellationToken));
+    public async Task<ActionResult<DefectResponse>> CreateDefect(Guid projectId, CreateDefectRequest request, CancellationToken cancellationToken)
+    {
+        if (await projects.GetByIdAsync(projectId, cancellationToken) is null) return NotFound();
+        return Ok(await service.CreateDefectAsync(projectId, request, cancellationToken));
+    }
 
     [HttpPatch("defects/{defectId:guid}/status")]
     public async Task<ActionResult<DefectResponse>> ChangeDefectStatus(Guid projectId, Guid defectId, ChangeDefectStatusRequest request, CancellationToken cancellationToken)
