@@ -274,12 +274,16 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+var logHandledException = LoggerMessage.Define(
+    LogLevel.Error,
+    new EventId(1001, "HandledApiException"),
+    "Request failed with a handled exception.");
 
 app.UseExceptionHandler(new ExceptionHandlerOptions
 {
     StatusCodeSelector = exception =>
     {
-        app.Logger.LogError(exception, "Request failed with a handled exception.");
+        logHandledException(app.Logger, exception);
         return exception switch
         {
             KeyNotFoundException => StatusCodes.Status404NotFound,
