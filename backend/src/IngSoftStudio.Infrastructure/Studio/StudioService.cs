@@ -1,5 +1,6 @@
 using System.Globalization;
 using ClosedXML.Excel;
+using IngSoftStudio.Application.Common;
 using IngSoftStudio.Application.Studio;
 using IngSoftStudio.Domain.Projects;
 using IngSoftStudio.Domain.Quality;
@@ -12,7 +13,9 @@ using QuestPDF.Infrastructure;
 
 namespace IngSoftStudio.Infrastructure.Studio;
 
-public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioService
+public sealed class StudioService(
+    IngSoftStudioDbContext dbContext,
+    ICurrentUserContext currentUser) : IStudioService
 {
     private const string ReportLogoResourceName = "IngSoftStudio.Infrastructure.Assets.ingsoft-studio-logo.webp";
     private const string ReportTimeZoneId = "America/Santo_Domingo";
@@ -48,19 +51,20 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
 
     public async Task<PortfolioDashboard> GetDashboardAsync(CancellationToken cancellationToken)
     {
-        var projects = await dbContext.Projects.AsNoTracking().GroupBy(_ => 1).Select(group => new { Total = group.Count(), Draft = group.Count(x => x.Status == ProjectStatus.Draft), Active = group.Count(x => x.Status == ProjectStatus.Active), Completed = group.Count(x => x.Status == ProjectStatus.Completed), Archived = group.Count(x => x.Status == ProjectStatus.Archived) }).SingleOrDefaultAsync(cancellationToken);
-        var totalRequirements = await dbContext.Requirements.CountAsync(cancellationToken);
-        var coveredRequirements = await dbContext.TestCases.Where(x => x.RequirementId != null).Select(x => x.RequirementId).Distinct().CountAsync(cancellationToken);
-        var totalTests = await dbContext.TestCases.CountAsync(cancellationToken);
-        var passedTests = await dbContext.TestCases.CountAsync(x => x.Status == TestCaseStatus.Passed, cancellationToken);
-        var openDefects = await dbContext.Defects.CountAsync(x => x.Status != DefectStatus.Closed && x.Status != DefectStatus.Resolved, cancellationToken);
-        var openRisks = await dbContext.Risks.CountAsync(x => x.Status != RiskStatus.Closed && x.Status != RiskStatus.Accepted, cancellationToken);
+        var accessibleProjects = AccessibleProjects().AsNoTracking();
+        var projects = await accessibleProjects.GroupBy(_ => 1).Select(group => new { Total = group.Count(), Draft = group.Count(x => x.Status == ProjectStatus.Draft), Active = group.Count(x => x.Status == ProjectStatus.Active), Completed = group.Count(x => x.Status == ProjectStatus.Completed), Archived = group.Count(x => x.Status == ProjectStatus.Archived) }).SingleOrDefaultAsync(cancellationToken);
+        var totalRequirements = await dbContext.Requirements.Where(item => accessibleProjects.Any(project => project.Id == item.ProjectId)).CountAsync(cancellationToken);
+        var coveredRequirements = await dbContext.TestCases.Where(item => accessibleProjects.Any(project => project.Id == item.ProjectId) && item.RequirementId != null).Select(x => x.RequirementId).Distinct().CountAsync(cancellationToken);
+        var totalTests = await dbContext.TestCases.Where(item => accessibleProjects.Any(project => project.Id == item.ProjectId)).CountAsync(cancellationToken);
+        var passedTests = await dbContext.TestCases.Where(item => accessibleProjects.Any(project => project.Id == item.ProjectId)).CountAsync(x => x.Status == TestCaseStatus.Passed, cancellationToken);
+        var openDefects = await dbContext.Defects.Where(item => accessibleProjects.Any(project => project.Id == item.ProjectId)).CountAsync(x => x.Status != DefectStatus.Closed && x.Status != DefectStatus.Resolved, cancellationToken);
+        var openRisks = await dbContext.Risks.Where(item => accessibleProjects.Any(project => project.Id == item.ProjectId)).CountAsync(x => x.Status != RiskStatus.Closed && x.Status != RiskStatus.Accepted, cancellationToken);
         return new PortfolioDashboard(projects?.Total ?? 0, projects?.Draft ?? 0, projects?.Active ?? 0, projects?.Completed ?? 0, projects?.Archived ?? 0, totalRequirements, totalTests, passedTests, openDefects, openRisks, Percent(passedTests, totalTests), Percent(coveredRequirements, totalRequirements));
     }
 
     public async Task<IReadOnlyCollection<ProjectInsight>> GetProjectInsightsAsync(CancellationToken cancellationToken)
     {
-        var projects = await dbContext.Projects.AsNoTracking().OrderBy(x => x.Name).ToListAsync(cancellationToken);
+        var projects = await AccessibleProjects().AsNoTracking().OrderBy(x => x.Name).ToListAsync(cancellationToken);
         var result = new List<ProjectInsight>(projects.Count);
         foreach (var project in projects)
         {
@@ -422,6 +426,11 @@ public sealed class StudioService(IngSoftStudioDbContext dbContext) : IStudioSer
         "SIN EVIDENCIA" => "#F8FAFC",
         _ => "#FFFBEB"
     };
+
+    private IQueryable<Project> AccessibleProjects() =>
+        currentUser.IsAdmin
+            ? dbContext.Projects
+            : dbContext.Projects.Where(project => project.OwnerId == currentUser.UserId);
 
     private static decimal Percent(int value, int total) => total == 0 ? 0 : decimal.Round((decimal)value / total * 100, 2);
 }

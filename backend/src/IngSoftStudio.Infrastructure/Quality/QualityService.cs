@@ -1,11 +1,15 @@
+using IngSoftStudio.Application.Common;
 using IngSoftStudio.Application.Quality;
+using IngSoftStudio.Domain.Projects;
 using IngSoftStudio.Domain.Quality;
 using IngSoftStudio.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace IngSoftStudio.Infrastructure.Quality;
 
-public sealed class QualityService(IngSoftStudioDbContext dbContext) : IQualityService
+public sealed class QualityService(
+    IngSoftStudioDbContext dbContext,
+    ICurrentUserContext currentUser) : IQualityService
 {
     public async Task<QualityDashboard> GetDashboardAsync(Guid projectId, CancellationToken cancellationToken)
     {
@@ -62,6 +66,7 @@ public sealed class QualityService(IngSoftStudioDbContext dbContext) : IQualityS
 
     public async Task<RiskResponse?> ChangeRiskStatusAsync(Guid projectId, Guid riskId, RiskStatus status, CancellationToken cancellationToken)
     {
+        await EnsureProjectExistsAsync(projectId, cancellationToken);
         var risk = await dbContext.Risks.SingleOrDefaultAsync(x => x.ProjectId == projectId && x.Id == riskId, cancellationToken);
         if (risk is null) return null;
         risk.ChangeStatus(status);
@@ -81,6 +86,7 @@ public sealed class QualityService(IngSoftStudioDbContext dbContext) : IQualityS
 
     public async Task<TestCaseResponse?> ExecuteTestCaseAsync(Guid projectId, Guid testCaseId, ExecuteTestCaseRequest request, CancellationToken cancellationToken)
     {
+        await EnsureProjectExistsAsync(projectId, cancellationToken);
         var testCase = await dbContext.TestCases.SingleOrDefaultAsync(x => x.ProjectId == projectId && x.Id == testCaseId, cancellationToken);
         if (testCase is null) return null;
         testCase.Execute(request.Status, request.ActualResult);
@@ -101,6 +107,7 @@ public sealed class QualityService(IngSoftStudioDbContext dbContext) : IQualityS
 
     public async Task<DefectResponse?> ChangeDefectStatusAsync(Guid projectId, Guid defectId, DefectStatus status, CancellationToken cancellationToken)
     {
+        await EnsureProjectExistsAsync(projectId, cancellationToken);
         var defect = await dbContext.Defects.SingleOrDefaultAsync(x => x.ProjectId == projectId && x.Id == defectId, cancellationToken);
         if (defect is null) return null;
         defect.ChangeStatus(status);
@@ -110,8 +117,13 @@ public sealed class QualityService(IngSoftStudioDbContext dbContext) : IQualityS
 
     private async Task EnsureProjectExistsAsync(Guid projectId, CancellationToken cancellationToken)
     {
-        if (!await dbContext.Projects.AnyAsync(x => x.Id == projectId, cancellationToken)) throw new KeyNotFoundException("Project not found.");
+        if (!await AccessibleProjects().AnyAsync(x => x.Id == projectId, cancellationToken)) throw new KeyNotFoundException("Project not found.");
     }
+
+    private IQueryable<Project> AccessibleProjects() =>
+        currentUser.IsAdmin
+            ? dbContext.Projects
+            : dbContext.Projects.Where(project => project.OwnerId == currentUser.UserId);
 
     private static decimal Percentage(int value, int total) => total == 0 ? 0 : Math.Round(value * 100m / total, 2);
     private static RiskResponse MapRisk(Risk x) => new(x.Id, x.ProjectId, x.Title, x.Description, x.Probability, x.Impact, x.Status, x.Score, x.Mitigation, x.CreatedAtUtc, x.UpdatedAtUtc);

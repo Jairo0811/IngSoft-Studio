@@ -1,8 +1,11 @@
 using System.Globalization;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using IngSoftStudio.Api.Identity;
+using IngSoftStudio.Application.Common;
 using IngSoftStudio.Application.Projects;
 using IngSoftStudio.Application.Quality;
 using IngSoftStudio.Application.Requirements;
@@ -14,6 +17,9 @@ using IngSoftStudio.Infrastructure.Quality;
 using IngSoftStudio.Infrastructure.Requirements;
 using IngSoftStudio.Infrastructure.Studio;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -23,13 +29,64 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
+const long MaximumRequestSize = 1024 * 1024;
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "ConnectionStrings:DefaultConnection must be configured outside the repository.");
+}
+
+var allowedOrigins = builder.Configuration
+    .GetSection("Frontend:AllowedOrigins")
+    .Get<string[]>()
+    ?.Where(origin => !string.IsNullOrWhiteSpace(origin))
+    .ToArray() ?? [];
+
+if (allowedOrigins.Length == 0)
+{
+    throw new InvalidOperationException(
+        "Frontend:AllowedOrigins must contain at least one trusted origin.");
+}
+
+if (!builder.Environment.IsDevelopment() &&
+    string.Equals(builder.Configuration["AllowedHosts"], "*", StringComparison.Ordinal))
+{
+    throw new InvalidOperationException(
+        "AllowedHosts must be restricted in production.");
+}
+
+if (!builder.Environment.IsDevelopment() &&
+    allowedOrigins.Any(origin => !origin.StartsWith("https://", StringComparison.OrdinalIgnoreCase)))
+{
+    throw new InvalidOperationException(
+        "Frontend origins must use HTTPS in production.");
+}
+
+if (!builder.Environment.IsDevelopment() &&
+    builder.Configuration.GetValue<bool>("Database:EnsureCreated"))
+{
+    throw new InvalidOperationException(
+        "Database:EnsureCreated cannot be enabled in production. Use migrations instead.");
+}
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = MaximumRequestSize;
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromSeconds(15);
+});
+
 builder.Host.UseSerilog((context, configuration) =>
     configuration
         .ReadFrom.Configuration(context.Configuration)
         .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture));
 
 builder.Services
-    .AddControllers()
+    .AddControllers(options =>
+    {
+        options.MaxModelBindingCollectionSize = 1_000;
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(
@@ -37,19 +94,35 @@ builder.Services
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        var exception = context.HttpContext.Features
+            .Get<IExceptionHandlerFeature>()
+            ?.Error;
+
+        if (builder.Environment.IsDevelopment() && exception is not null)
+        {
+            context.ProblemDetails.Detail = exception.ToString();
+        }
+    };
+});
 builder.Services.AddHealthChecks();
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = MaximumRequestSize;
+});
 
 builder.Services.AddDbContext<IngSoftStudioDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));
 
 builder.Services
     .AddIdentityCore<ApplicationUser>(options =>
     {
         options.Stores.SchemaVersion = IdentitySchemaVersions.Version2;
 
-        options.Password.RequiredLength = 8;
+        options.Password.RequiredLength = 12;
         options.Password.RequireDigit = true;
         options.Password.RequireLowercase = true;
         options.Password.RequireUppercase = true;
@@ -81,6 +154,14 @@ if (string.IsNullOrWhiteSpace(jwt.SigningKey) ||
         "Jwt:SigningKey must be configured with at least 32 characters.");
 }
 
+if (string.IsNullOrWhiteSpace(jwt.Issuer) ||
+    string.IsNullOrWhiteSpace(jwt.Audience) ||
+    jwt.ExpirationMinutes is < 5 or > 120)
+{
+    throw new InvalidOperationException(
+        "JWT issuer, audience and an expiration between 5 and 120 minutes are required.");
+}
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -100,9 +181,37 @@ builder.Services
 
             ClockSkew = TimeSpan.FromMinutes(1)
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var userId = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var stampHash = context.Principal?.FindFirstValue("security_stamp_hash");
+                var userManager = context.HttpContext.RequestServices
+                    .GetRequiredService<UserManager<ApplicationUser>>();
+                var user = Guid.TryParse(userId, out var parsedUserId)
+                    ? await userManager.FindByIdAsync(parsedUserId.ToString())
+                    : null;
+
+                if (user is null ||
+                    string.IsNullOrWhiteSpace(stampHash) ||
+                    !CryptographicOperations.FixedTimeEquals(
+                        Encoding.ASCII.GetBytes(stampHash),
+                        Encoding.ASCII.GetBytes(SecurityStampHasher.Hash(user.SecurityStamp))))
+                {
+                    context.Fail("The token is no longer valid.");
+                }
+            }
+        };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -123,15 +232,20 @@ builder.Services.AddRateLimiter(options =>
                         AutoReplenishment = true
                     }));
 
-    options.AddFixedWindowLimiter("auth", limiter =>
-    {
-        limiter.PermitLimit = 10;
-        limiter.Window = TimeSpan.FromMinutes(1);
-        limiter.QueueLimit = 0;
-        limiter.AutoReplenishment = true;
-    });
+    options.AddPolicy("auth", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 8,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
 });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserContext, HttpCurrentUserContext>();
 builder.Services.AddScoped<JwtTokenService>();
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
@@ -166,17 +280,33 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Frontend", policy =>
     {
         policy
-            .WithOrigins(
-                builder.Configuration["Frontend:Url"]
-                ?? "http://localhost:5173")
+            .WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
+var logHandledException = LoggerMessage.Define(
+    LogLevel.Error,
+    new EventId(1001, "HandledApiException"),
+    "Request failed with a handled exception.");
 
-app.UseExceptionHandler();
+app.UseExceptionHandler(new ExceptionHandlerOptions
+{
+    StatusCodeSelector = exception =>
+    {
+        logHandledException(app.Logger, exception);
+        return exception switch
+        {
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            ArgumentException => StatusCodes.Status400BadRequest,
+            UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+            DbUpdateException => StatusCodes.Status409Conflict,
+            _ => StatusCodes.Status500InternalServerError
+        };
+    }
+});
 app.UseSerilogRequestLogging();
 
 if (!app.Environment.IsDevelopment())
@@ -203,16 +333,15 @@ app.Use(async (context, next) =>
     await next();
 });
 
-app.UseCors("Frontend");
 app.UseHttpsRedirection();
-
-app.UseRateLimiter();
+app.UseCors("Frontend");
 
 app.UseAuthentication();
+app.UseRateLimiter();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health").AllowAnonymous();
 
 if (app.Configuration.GetValue<bool>("Database:EnsureCreated"))
 {

@@ -35,7 +35,7 @@ export default function AccountPage() {
       {(message || error) && <p className={error ? 'form-error' : 'form-success'} role="status">{error || message}</p>}
       <section className="account-grid">
         <form className="auth-card" onSubmit={handleProfile}><h2>Perfil</h2><label>Nombre completo<input value={fullName} onChange={(event) => setFullName(event.target.value)} required maxLength={150} /></label><button type="submit">Guardar cambios</button></form>
-        <form className="auth-card" onSubmit={handlePassword}><h2>Seguridad</h2><label>Contraseña actual<input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required /></label><label>Nueva contraseña<input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required minLength={8} /></label><button type="submit">Cambiar contraseña</button></form>
+        <form className="auth-card" onSubmit={handlePassword}><h2>Seguridad</h2><label>Contraseña actual<input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required maxLength={128} autoComplete="current-password" /></label><label>Nueva contraseña<input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required minLength={12} maxLength={128} autoComplete="new-password" /></label><button type="submit">Cambiar contraseña</button></form>
       </section>
     </section>
   </main>

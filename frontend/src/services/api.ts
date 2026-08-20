@@ -1,4 +1,4 @@
-export const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
+export const API_URL = import.meta.env.VITE_API_URL ?? ''
 export const TOKEN_KEY = 'ingsoftstudio.accessToken'
 
 export class ApiError extends Error {
@@ -31,20 +31,26 @@ async function parseError(response: Response) {
 }
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = localStorage.getItem(TOKEN_KEY)
-  const response = await fetch(`${API_URL}${path}`, {
+  const token = sessionStorage.getItem(TOKEN_KEY)
+  const headers = new Headers(init?.headers)
+
+  if (init?.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json')
+  }
+
+  if (token) {
+    headers.set('Authorization', `Bearer ${token}`)
+  }
+
+  const response = await fetch(buildApiUrl(path), {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init?.headers,
-    },
+    headers,
   })
 
   if (!response.ok) {
     const { message, details } = await parseError(response)
     if (response.status === 401 && token) {
-      localStorage.removeItem(TOKEN_KEY)
+      sessionStorage.removeItem(TOKEN_KEY)
       if (window.location.pathname !== '/auth') window.location.assign('/auth?expired=1')
     }
     throw new ApiError(response.status, message, details)
@@ -53,4 +59,20 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
   if (response.status === 204) return undefined as T
   const text = await response.text()
   return (text ? JSON.parse(text) : undefined) as T
+}
+
+export function buildApiUrl(path: string): string {
+  if (!/^\/api(?:\/|$)/.test(path)) {
+    throw new Error('API requests must use an internal /api path.')
+  }
+
+  const applicationOrigin = window.location.origin
+  const configuredBase = new URL(API_URL || applicationOrigin, applicationOrigin)
+  const url = new URL(path, configuredBase.origin)
+
+  if (url.origin !== configuredBase.origin) {
+    throw new Error('Refusing to send credentials outside the configured API origin.')
+  }
+
+  return url.toString()
 }

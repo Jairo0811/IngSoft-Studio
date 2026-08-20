@@ -1,4 +1,4 @@
-import { API_URL, TOKEN_KEY, apiRequest } from './api'
+import { TOKEN_KEY, apiRequest, buildApiUrl } from './api'
 
 export type PortfolioDashboard = {
   totalProjects: number
@@ -25,8 +25,8 @@ export type SimulationSummary = { attempts: number; averageScore: number; bestSc
 export type LearningTopic = { id: string; title: string; category: string; summary: string; keyPoints: string[] }
 
 async function downloadReport(path: string, fallbackName: string) {
-  const token = localStorage.getItem(TOKEN_KEY)
-  const response = await fetch(`${API_URL}${path}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+  const token = sessionStorage.getItem(TOKEN_KEY)
+  const response = await fetch(buildApiUrl(path), { headers: token ? { Authorization: `Bearer ${token}` } : {} })
   if (!response.ok) throw new Error('No fue posible generar el reporte.')
   const blob = await response.blob()
   const disposition = response.headers.get('content-disposition') ?? ''

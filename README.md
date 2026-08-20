@@ -461,12 +461,23 @@ dotnet test backend/tests/IngSoftStudio.Api.IntegrationTests/IngSoftStudio.Api.I
 
 ```powershell
 cd frontend
-$env:VITE_API_URL="http://localhost:5000"
-npm install
+$env:VITE_API_URL="https://localhost:54702"
+npm ci
 npm run lint
 npm run build
 npm run dev
 ```
+
+En producción, configura `ConnectionStrings:DefaultConnection`, `Jwt:SigningKey`,
+`Frontend:AllowedOrigins` y `AllowedHosts` mediante secretos o variables de entorno.
+Ejecuta las migraciones antes de iniciar la API. Los proyectos nuevos quedan asociados
+al usuario que los crea; los proyectos anteriores sin propietario solo son visibles
+para administradores hasta que un administrador les asigne un propietario en la base
+de datos.
+
+El endpoint de recuperación nunca devuelve ni registra el token. Para habilitar el
+flujo completo debes entregar el token mediante un proveedor externo verificado
+(correo, SMS u otro canal fuera de banda).
 
 ---
 
