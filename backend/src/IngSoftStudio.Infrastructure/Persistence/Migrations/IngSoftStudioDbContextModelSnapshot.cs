@@ -25,10 +25,12 @@ internal sealed class IngSoftStudioDbContextModelSnapshot : ModelSnapshot
             b.Property<DateTime>("CreatedAtUtc").HasColumnType("datetime2");
             b.Property<string>("Description").HasMaxLength(1000).HasColumnType("nvarchar(1000)");
             b.Property<string>("Name").IsRequired().HasMaxLength(150).HasColumnType("nvarchar(150)");
+            b.Property<Guid>("OwnerId").HasColumnType("uniqueidentifier");
             b.Property<string>("Status").IsRequired().HasMaxLength(30).HasColumnType("nvarchar(30)");
             b.Property<DateTime?>("UpdatedAtUtc").HasColumnType("datetime2");
             b.HasKey("Id");
             b.HasIndex("Name");
+            b.HasIndex("OwnerId");
             b.ToTable("Projects");
         });
 

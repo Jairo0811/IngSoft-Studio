@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using IngSoftStudio.Api.Identity;
 using IngSoftStudio.Application.Projects;
+using IngSoftStudio.Application.Common;
 using IngSoftStudio.Application.Quality;
 using IngSoftStudio.Application.Requirements;
 using IngSoftStudio.Application.Studio;
@@ -133,6 +134,8 @@ builder.Services.AddRateLimiter(options =>
 });
 
 builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, HttpCurrentUser>();
 
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IRequirementService, RequirementService>();

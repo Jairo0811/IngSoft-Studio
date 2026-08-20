@@ -37,6 +37,8 @@ public sealed class IngSoftStudioDbContext(DbContextOptions<IngSoftStudioDbConte
             entity.Property(project => project.Name).HasMaxLength(150).IsRequired();
             entity.Property(project => project.Description).HasMaxLength(1000);
             entity.Property(project => project.Status).HasConversion<string>().HasMaxLength(30);
+            entity.Property(project => project.OwnerId).IsRequired();
+            entity.HasIndex(project => project.OwnerId);
             entity.HasIndex(project => project.Name);
         });
 
