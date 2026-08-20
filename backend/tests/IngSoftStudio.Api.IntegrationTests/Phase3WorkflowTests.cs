@@ -19,9 +19,12 @@ public sealed class Phase3WorkflowTests(ApiFactory factory) : IClassFixture<ApiF
             "/api/auth/register",
             new { fullName = "Phase 3 Test", email, password = "StrongPass123!" },
             cancellationToken);
-        Assert.Equal(HttpStatusCode.OK, registerResponse.StatusCode);
+        var registerBody = await registerResponse.Content.ReadAsStringAsync(cancellationToken);
+        Assert.True(
+            registerResponse.StatusCode == HttpStatusCode.OK,
+            $"Registration failed with {registerResponse.StatusCode}: {registerBody}");
 
-        using var registerJson = JsonDocument.Parse(await registerResponse.Content.ReadAsStringAsync(cancellationToken));
+        using var registerJson = JsonDocument.Parse(registerBody);
         var accessToken = registerJson.RootElement.GetProperty("accessToken").GetString();
         Assert.False(string.IsNullOrWhiteSpace(accessToken));
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -146,9 +149,11 @@ public sealed class Phase3WorkflowTests(ApiFactory factory) : IClassFixture<ApiF
             },
             cancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        using var json = JsonDocument.Parse(
-            await response.Content.ReadAsStringAsync(cancellationToken));
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+        Assert.True(
+            response.StatusCode == HttpStatusCode.OK,
+            $"Registration failed with {response.StatusCode}: {responseBody}");
+        using var json = JsonDocument.Parse(responseBody);
         var token = json.RootElement.GetProperty("accessToken").GetString();
         Assert.False(string.IsNullOrWhiteSpace(token));
         client.DefaultRequestHeaders.Authorization =

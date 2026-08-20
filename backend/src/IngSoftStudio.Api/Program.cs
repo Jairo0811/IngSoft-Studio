@@ -94,7 +94,20 @@ builder.Services
     });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(options =>
+{
+    options.CustomizeProblemDetails = context =>
+    {
+        var exception = context.HttpContext.Features
+            .Get<IExceptionHandlerFeature>()
+            ?.Error;
+
+        if (builder.Environment.IsDevelopment() && exception is not null)
+        {
+            context.ProblemDetails.Detail = exception.ToString();
+        }
+    };
+});
 builder.Services.AddHealthChecks();
 builder.Services.Configure<FormOptions>(options =>
 {
