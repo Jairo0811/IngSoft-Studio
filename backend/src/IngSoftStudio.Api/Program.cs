@@ -277,13 +277,17 @@ var app = builder.Build();
 
 app.UseExceptionHandler(new ExceptionHandlerOptions
 {
-    StatusCodeSelector = exception => exception switch
+    StatusCodeSelector = exception =>
     {
-        KeyNotFoundException => StatusCodes.Status404NotFound,
-        ArgumentException => StatusCodes.Status400BadRequest,
-        UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
-        DbUpdateException => StatusCodes.Status409Conflict,
-        _ => StatusCodes.Status500InternalServerError
+        app.Logger.LogError(exception, "Request failed with a handled exception.");
+        return exception switch
+        {
+            KeyNotFoundException => StatusCodes.Status404NotFound,
+            ArgumentException => StatusCodes.Status400BadRequest,
+            UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+            DbUpdateException => StatusCodes.Status409Conflict,
+            _ => StatusCodes.Status500InternalServerError
+        };
     }
 });
 app.UseSerilogRequestLogging();
