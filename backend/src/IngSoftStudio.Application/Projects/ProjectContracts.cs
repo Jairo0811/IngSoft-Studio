@@ -4,15 +4,15 @@ using IngSoftStudio.Domain.Projects;
 namespace IngSoftStudio.Application.Projects;
 
 public sealed record CreateProjectRequest(
-    [property: Required, StringLength(150, MinimumLength = 2)] string Name,
-    [property: StringLength(1000)] string? Description);
+    [Required, StringLength(150, MinimumLength = 2)] string Name,
+    [StringLength(1000)] string? Description);
 
 public sealed record UpdateProjectRequest(
-    [property: Required, StringLength(150, MinimumLength = 2)] string Name,
-    [property: StringLength(1000)] string? Description);
+    [Required, StringLength(150, MinimumLength = 2)] string Name,
+    [StringLength(1000)] string? Description);
 
 public sealed record ChangeProjectStatusRequest(
-    [property: EnumDataType(typeof(ProjectStatus))] ProjectStatus Status);
+    [EnumDataType(typeof(ProjectStatus))] ProjectStatus Status);
 
 public sealed record ProjectResponse(
     Guid Id,

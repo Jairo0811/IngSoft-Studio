@@ -4,23 +4,23 @@ using IngSoftStudio.Domain.Requirements;
 namespace IngSoftStudio.Application.Requirements;
 
 public sealed record CreateRequirementRequest(
-    [property: Required, StringLength(200, MinimumLength = 2)] string Title,
-    [property: Required, StringLength(4000, MinimumLength = 2)] string Description,
-    [property: EnumDataType(typeof(RequirementType))] RequirementType Type,
-    [property: EnumDataType(typeof(RequirementPriority))] RequirementPriority Priority,
-    [property: StringLength(4000)] string? AcceptanceCriteria,
-    [property: StringLength(500)] string? Source);
+    [Required, StringLength(200, MinimumLength = 2)] string Title,
+    [Required, StringLength(4000, MinimumLength = 2)] string Description,
+    [EnumDataType(typeof(RequirementType))] RequirementType Type,
+    [EnumDataType(typeof(RequirementPriority))] RequirementPriority Priority,
+    [StringLength(4000)] string? AcceptanceCriteria,
+    [StringLength(500)] string? Source);
 
 public sealed record UpdateRequirementRequest(
-    [property: Required, StringLength(200, MinimumLength = 2)] string Title,
-    [property: Required, StringLength(4000, MinimumLength = 2)] string Description,
-    [property: EnumDataType(typeof(RequirementType))] RequirementType Type,
-    [property: EnumDataType(typeof(RequirementPriority))] RequirementPriority Priority,
-    [property: StringLength(4000)] string? AcceptanceCriteria,
-    [property: StringLength(500)] string? Source);
+    [Required, StringLength(200, MinimumLength = 2)] string Title,
+    [Required, StringLength(4000, MinimumLength = 2)] string Description,
+    [EnumDataType(typeof(RequirementType))] RequirementType Type,
+    [EnumDataType(typeof(RequirementPriority))] RequirementPriority Priority,
+    [StringLength(4000)] string? AcceptanceCriteria,
+    [StringLength(500)] string? Source);
 
 public sealed record ChangeRequirementStatusRequest(
-    [property: EnumDataType(typeof(RequirementStatus))] RequirementStatus Status);
+    [EnumDataType(typeof(RequirementStatus))] RequirementStatus Status);
 
 public sealed record RequirementResponse(
     Guid Id,

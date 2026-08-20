@@ -3,28 +3,28 @@ using System.ComponentModel.DataAnnotations;
 namespace IngSoftStudio.Api.Identity;
 
 public sealed record RegisterRequest(
-    [property: Required, StringLength(150, MinimumLength = 2)] string FullName,
-    [property: Required, EmailAddress, StringLength(256)] string Email,
-    [property: Required, StringLength(128, MinimumLength = 12)] string Password);
+    [Required, StringLength(150, MinimumLength = 2)] string FullName,
+    [Required, EmailAddress, StringLength(256)] string Email,
+    [Required, StringLength(128, MinimumLength = 12)] string Password);
 
 public sealed record LoginRequest(
-    [property: Required, EmailAddress, StringLength(256)] string Email,
-    [property: Required, StringLength(128, MinimumLength = 1)] string Password);
+    [Required, EmailAddress, StringLength(256)] string Email,
+    [Required, StringLength(128, MinimumLength = 1)] string Password);
 
 public sealed record ForgotPasswordRequest(
-    [property: Required, EmailAddress, StringLength(256)] string Email);
+    [Required, EmailAddress, StringLength(256)] string Email);
 
 public sealed record ResetPasswordRequest(
-    [property: Required, EmailAddress, StringLength(256)] string Email,
-    [property: Required, StringLength(4096, MinimumLength = 8)] string Token,
-    [property: Required, StringLength(128, MinimumLength = 12)] string NewPassword);
+    [Required, EmailAddress, StringLength(256)] string Email,
+    [Required, StringLength(4096, MinimumLength = 8)] string Token,
+    [Required, StringLength(128, MinimumLength = 12)] string NewPassword);
 
 public sealed record ChangePasswordRequest(
-    [property: Required, StringLength(128, MinimumLength = 1)] string CurrentPassword,
-    [property: Required, StringLength(128, MinimumLength = 12)] string NewPassword);
+    [Required, StringLength(128, MinimumLength = 1)] string CurrentPassword,
+    [Required, StringLength(128, MinimumLength = 12)] string NewPassword);
 
 public sealed record UpdateProfileRequest(
-    [property: Required, StringLength(150, MinimumLength = 2)] string FullName);
+    [Required, StringLength(150, MinimumLength = 2)] string FullName);
 
 public sealed record AuthResponse(
     string AccessToken,
