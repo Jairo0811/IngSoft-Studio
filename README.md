@@ -461,12 +461,34 @@ dotnet test backend/tests/IngSoftStudio.Api.IntegrationTests/IngSoftStudio.Api.I
 
 ```powershell
 cd frontend
-$env:VITE_API_URL="http://localhost:5000"
 npm install
 npm run lint
 npm run build
 npm run dev
 ```
+
+### 📱 Acceso desde un móvil en la red local
+
+El frontend Vite escucha en `0.0.0.0:5173`. Cuando `VITE_API_URL` no está definido, utiliza rutas relativas y el proxy de Vite reenvía `/api` hacia el backend local en `127.0.0.1:5000`.
+
+Con la PC y el móvil conectados a la misma red:
+
+1. Levanta primero el backend en el puerto `5000`.
+2. Ejecuta `npm run dev` dentro de `frontend`.
+3. Obtén la IPv4 de la PC con `ipconfig`.
+4. Abre en el teléfono:
+
+```text
+http://<IP-DE-LA-PC>:5173
+```
+
+Ejemplo:
+
+```text
+http://192.168.1.50:5173
+```
+
+No configures `VITE_API_URL=http://localhost:5000` para la prueba LAN, porque `localhost` desde el móvil apunta al propio teléfono. Si Windows solicita acceso de firewall para Node.js, permite únicamente redes privadas.
 
 ---
 
