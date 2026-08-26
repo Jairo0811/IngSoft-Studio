@@ -27,6 +27,14 @@
 
 El proyecto nace como una reconstrucción moderna de los contenidos estudiados en **Introducción a la Ingeniería en Software (SOF-015)** del Instituto Tecnológico de Las Américas. La asignatura fue principalmente teórica; esta implementación convierte aquellos fundamentos en una aplicación real, modular y preparada como proyecto profesional de portafolio.
 
+### 🛠️ Restaurando Proyectos Finales del ITLA
+
+**IngSoft Studio** forma parte de la iniciativa **“Restaurando Proyectos Finales del ITLA”**, aunque este caso es diferente a los proyectos anteriores: aquí no existía una aplicación que restaurar.
+
+El punto de partida fue un **trabajo académico teórico** realizado durante la etapa estudiantil en la asignatura **Introducción a la Ingeniería en Software (SOF-015)**. Años después, aquellos conceptos fueron retomados y transformados en una aplicación de software completa, moderna y funcional, preservando su contexto académico y llevándolo a un estándar actual de desarrollo profesional.
+
+En este caso, “restaurar” significa **convertir conocimiento académico en software real**: requisitos, riesgos, pruebas, trazabilidad, calidad, métricas, reportes y toma de decisiones integrados dentro de una misma plataforma.
+
 > 💡 La idea de transformar el trabajo académico en una plataforma de software fue concebida por **Francis Jairo Matías Rosario**.
 
 ---
