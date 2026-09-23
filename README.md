@@ -4,7 +4,7 @@
 
 <br/>
 
-<img src="https://img.shields.io/badge/ITLA-2017--C3-0057B8?style=for-the-badge" alt="ITLA 2017-C3" />
+<img src="https://img.shields.io/badge/ITLA-SOF--015-0057B8?style=for-the-badge" alt="ITLA SOF-015" />
 
 <br/><br/>
 
@@ -16,6 +16,12 @@
 ![Architecture](https://img.shields.io/badge/Architecture-Clean-14B8A6?style=for-the-badge)
 ![Identity](https://img.shields.io/badge/ASP.NET_Core-Identity-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![Accessibility](https://img.shields.io/badge/Accessibility-NORTIC_B2-0057B8?style=for-the-badge)
+
+<br/><br/>
+
+<a href="https://github.com/Jairo0811/IngSoft-Studio/actions/workflows/ci.yml">
+  <img src="https://github.com/Jairo0811/IngSoft-Studio/actions/workflows/ci.yml/badge.svg" alt="CI" />
+</a>
 
 > Plataforma web para gestionar, analizar y simular el ciclo de vida del desarrollo de software, desde los requisitos y el diseño hasta las pruebas, la calidad y el mantenimiento.
 
@@ -146,7 +152,7 @@ ingsoft-studio-report-16-08-2026.xlsx
 
 ---
 
-## 🛠️ Stack tecnológico
+## 🧱 Stack tecnológico
 
 ### Backend
 
@@ -306,7 +312,7 @@ Consulta [`SECURITY.md`](./SECURITY.md).
 
 ---
 
-## 🎓 Contexto académico
+## 🎓 Información académica
 
 | Dato | Información |
 |---|---|
@@ -319,15 +325,15 @@ Consulta [`SECURITY.md`](./SECURITY.md).
 | 📚 Naturaleza de la materia | Teórica |
 | 💡 Idea de reconstrucción | Francis Jairo Matías Rosario |
 
-## 👥 Integrantes del grupo original
+### 👥 Equipo académico original
 
-| Nombre completo | Matrícula |
+| 👤 Integrante | 🆔 Matrícula |
 |---|---|
-| 👨‍💻 **Francis Jairo Matías Rosario** | 2015-2984 |
-| 👨‍🎓 **Franger Omar Ramírez Peguero** | 2015-3008 |
-| 👨‍🎓 **Pedro Arturo de León Parra** | 2015-3018 |
-| 👨‍🎓 **José Andres Durán Diaz** | 2015-3035 |
-| 👨‍🎓 **Fidel Ernesto Acosta Morillo** | 2015-3045 |
+| 👨🏻‍💻 **Francis Jairo Matías Rosario** | 2015-2984 |
+| 👨🏻‍💻 **Franger Omar Ramírez Peguero** | 2015-3008 |
+| 👨🏻‍💻 **Pedro Arturo de León Parra** | 2015-3018 |
+| 👨🏻‍💻 **José Andres Durán Diaz** | 2015-3035 |
+| 👨🏻‍💻 **Fidel Ernesto Acosta Morillo** | 2015-3045 |
 
 > El grupo participó en los trabajos académicos originales. La reconstrucción moderna de IngSoft Studio corresponde a una iniciativa posterior desarrollada por Francis Jairo Matías Rosario.
 
@@ -337,10 +343,10 @@ Consulta [`SECURITY.md`](./SECURITY.md).
 
 La secuencia comenzó en **2017-C2** con **Auditoría Informática (SOF-009)**, donde **Pedro Arturo de León Parra (2015-3018)** coincidió con Francis Jairo Matías Rosario en el grupo cuya exposición inspiró posteriormente AuditCore. En el período siguiente, **2017-C3**, ambos volvieron a coincidir en **Introducción a la Ingeniería en Software (SOF-015)**, materia que posteriormente dio origen conceptual a IngSoft Studio.
 
-| Orden | Código | Asignatura | Proyecto | Período | Compañero recurrente |
-|---:|---|---|---|---|---|
-| 1 | SOF-009 | Auditoría Informática | [**AuditCore**](https://github.com/Jairo0811/AuditCore) | 2017-C2 | **Pedro Arturo de León Parra — 2015-3018** |
-| 2 | SOF-015 | Introducción a la Ingeniería en Software | **IngSoft Studio** | 2017-C3 | **Pedro Arturo de León Parra — 2015-3018** |
+| Orden | Asignatura | Proyecto | Período |
+|---:|---|---|---|
+| 1 | Auditoría Informática (SOF-009) | [**AuditCore**](https://github.com/Jairo0811/AuditCore) | 2017-C2 |
+| 2 | Introducción a la Ingeniería en Software (SOF-015) | **IngSoft Studio** | 2017-C3 |
 
 Vistos en conjunto, ambos proyectos documentan una continuidad real entre compañeros durante dos períodos consecutivos y una progresión temática desde **auditoría, controles y cumplimiento** hacia **ingeniería de software, requisitos, calidad y ciclo de vida del desarrollo**. La coincidencia se considera verificada por el mismo **nombre completo y matrícula 2015-3018**.
 
